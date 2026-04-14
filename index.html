@@ -3,12 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- 캐시 방지 (무조건 새로고침) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>성구(原典) 검색 ver 1.0</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&display=swap"
-        rel="stylesheet">
+    <script>
+        // [무조건 반사] 모바일 강제 리다이렉트 (768px 미만 또는 Mobile UA)
+        if (window.innerWidth < 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            if (!window.location.search.includes('mode=pc')) {
+                window.location.replace("mobile.html");
+            }
+        }
+    </script>
     <style>
         :root {
             --bg-dark: #0a0a0c;
@@ -21,7 +29,7 @@
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             --text-primary: #e8e8e8;
             --text-secondary: #9aa0a6;
-            --font-main: 'Noto Serif KR', serif;
+            --font-main: "Apple SD Gothic Neo", "Nanum Myeongjo", "Batang", "AppleMyungjo", serif;
         }
 
         body,
