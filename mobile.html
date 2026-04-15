@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>성구(原典) 검색 v1.5.7 M (Precision Engine)</title>
+    <title>성구(原典) 검색 v1.5.8 M (Navigator Engine)</title>
     <!-- 구글 폰트: 나눔 명조(본문용), 폰트(Gothic) -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -151,10 +151,12 @@
         .reader-content p { margin-bottom: 22px; text-align: justify; }
         .highlight-verse { 
             color: #000 !important; font-weight: 800; 
-            background: rgba(212, 175, 55, 0.12); 
-            padding: 8px 12px; border-radius: 6px; 
-            border-left: 5px solid var(--gold-premium); 
-            box-shadow: var(--shadow-soft);
+            background: rgba(212, 175, 55, 0.15); 
+            padding: 12px; border-radius: 8px; 
+            border-left: 6px solid var(--gold-premium); 
+            box-shadow: var(--shadow-medium);
+            transform: scale(1.02);
+            transition: all 0.3s;
         }
     </style>
 </head>
@@ -340,6 +342,7 @@
                                 chapter: currentChapter, 
                                 verse: isAnwonjeon ? "" : currentVerse, 
                                 text: displayLine,
+                                fullMatchText: processedLine, // Navigation용 전체 텍스트 보관
                                 isAggregated: isAnwonjeon,
                                 query: query 
                             });
@@ -373,8 +376,8 @@
                     <div class="match-header">${item.displayBook} | ${locStr}</div>
                     <div class="match-text">${item.text}</div>
                 `;
-                // Precise passing of identification data
-                div.onclick = () => openReader(item.book, item.chapter, item.verse, item.isAggregated, item.query);
+                // Precise passing of identification data + Full Match Text for Auto-Scroll
+                div.onclick = () => openReader(item.book, item.chapter, item.verse, item.isAggregated, item.query, item.fullMatchText);
                 container.appendChild(div);
             });
 
@@ -394,14 +397,12 @@
             }
         }
 
-        function openReader(bookName, targetChapter, targetVerse, isAggregated, highlightQuery) {
+        function openReader(bookName, targetChapter, targetVerse, isAggregated, highlightQuery, targetLineText) {
             const layer = document.getElementById('readerLayer');
             const content = document.getElementById('readerContent');
             const title = document.getElementById('readerTitle');
             
-            // Re-label Anwonjeon if needed for the title
-            let displayTitle = getPremiumName(bookName);
-            title.textContent = displayTitle;
+            title.textContent = getPremiumName(bookName);
             
             const rawData = BIBLE_DATA[bookName].replace(/!\[.*?\]\(.*?\)/g, '');
             const lines = rawData.split('\n');
@@ -409,13 +410,12 @@
             let html = "";
             let currentChapter = "";
             let currentVerse = "";
-            let sectionStarted = false;
+            let firstMatchIdInReader = "";
 
             lines.forEach((line, idx) => {
                 let processedLine = line.trim();
                 if (!processedLine) return;
                 
-                // Anwonjeon Split Logic (Same as Search)
                 if (bookName.includes('안원전') && processedLine.includes("天地開闢經 第一篇 辛丑年")) {
                     processedLine = processedLine.replace("天地開闢經 第一篇 辛丑年", "천지개벽경 제1편 신축년");
                     currentChapter = "천지개벽경 제1편 신축년";
@@ -426,26 +426,25 @@
                     currentVerse = processedLine.replace('###', '').trim();
                 }
 
-                // Filtering Logic (Only show target section)
-                let isInTargetSection = false;
-                if (isAggregated) {
-                   if (currentChapter === targetChapter) isInTargetSection = true;
-                } else {
-                   if (currentChapter === targetChapter && currentVerse === targetVerse) isInTargetSection = true;
-                }
+                // 맥락 유지 (Context-Aware): 해당 장(Chapter)의 모든 내용을 보여줌
+                if (currentChapter === targetChapter) {
+                    const lineId = `reader-line-${idx}`;
+                    let isSpecialMatch = (processedLine === targetLineText);
+                    
+                    if (isSpecialMatch && !firstMatchIdInReader) {
+                        firstMatchIdInReader = lineId;
+                    }
 
-                if (isInTargetSection) {
                     if (processedLine.startsWith('## ')) {
-                        html += `<h2 style="color:var(--gold-active); border-bottom:2px solid var(--gold-premium); padding-bottom:10px; margin-top:10px; font-weight:800;">${currentChapter}</h2>`;
+                        html += `<h2 id="${lineId}" style="color:var(--gold-active); border-bottom:2px solid var(--gold-premium); padding-bottom:10px; margin-top:10px; font-weight:800;">${currentChapter}</h2>`;
                     } else if (processedLine.startsWith('### ')) {
-                        html += `<h3>${currentVerse}</h3>`;
+                        html += `<h3 id="${lineId}">${currentVerse}</h3>`;
                     } else if (!processedLine.startsWith('#')) {
                         const cleanLine = processedLine.toLowerCase().replace(/\s+/g, '');
-                        let shouldHighlight = false;
-                        if (highlightQuery && (cleanLine.includes(highlightQuery) || getChoseong(cleanLine).includes(highlightQuery))) {
-                            shouldHighlight = true;
-                        }
-                        html += `<p class="${shouldHighlight ? 'highlight-verse' : ''}">${processedLine}</p>`;
+                        // 정확히 클릭한 구절이거나, 검색어가 포함된 구절 하이라이트
+                        let shouldHighlight = isSpecialMatch || (highlightQuery && (cleanLine.includes(highlightQuery) || getChoseong(cleanLine).includes(highlightQuery)));
+                        
+                        html += `<p id="${lineId}" class="${shouldHighlight ? 'highlight-verse' : ''}">${processedLine}</p>`;
                     }
                 }
             });
@@ -453,7 +452,16 @@
             content.innerHTML = html || "<p style='text-align:center; padding-top:40px;'>해당 섹션의 내용을 찾을 수 없습니다.</p>";
             layer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            content.scrollTop = 0;
+
+            // 자동 스크롤 및 내비게이션 복구
+            setTimeout(() => {
+                const targetEl = document.getElementById(firstMatchIdInReader);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    content.scrollTop = 0;
+                }
+            }, 300);
         }
     </script>
 </body>
