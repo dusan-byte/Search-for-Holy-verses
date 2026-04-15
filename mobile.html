@@ -3,24 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>성구(原典) 검색 v1.1 M</title>
+    <title>성구(原典) 검색 v1.5 M (Premium Light)</title>
+    <!-- 구글 폰트: 나눔 명조(본문용), 폰트(Gothic) -->
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #0a0a0c;
-            --bg-accent: #16161a;
-            --gold: #d4af37;
-            --gold-hover: #ebd076;
-            --gold-dim: rgba(212, 175, 55, 0.15);
-            --glass-bg: rgba(255, 255, 255, 0.05);
-            --glass-border: rgba(255, 255, 255, 0.1);
-            --text-primary: #e8e8e8;
-            --text-secondary: #9aa0a6;
-            --font-main: "Apple SD Gothic Neo", "Nanum Myeongjo", "Batang", serif;
+            --bg-light: #F9F9F9;
+            --bg-paper: #FDFBF7; /* 연한 종이 질감 색상 */
+            --card-bg: #FFFFFF;
+            --text-main: #222222;
+            --text-muted: #666666;
+            --gold-premium: #D4AF37;
+            --gold-active: #B8952E;
+            --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.08);
+            --border-light: #EEEEEE;
         }
 
         body, html {
-            margin: 0; padding: 0; background-color: var(--bg-dark);
-            color: var(--text-primary); font-family: var(--font-main);
+            margin: 0; padding: 0; background-color: var(--bg-light);
+            color: var(--text-main); font-family: 'Noto Sans KR', sans-serif;
             height: 100%; overflow-x: hidden; -webkit-tap-highlight-color: transparent;
         }
 
@@ -29,119 +31,157 @@
         /* 헤더: 검색바 및 필터 고정 */
         .app-header {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(10, 10, 12, 0.95); backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--glass-border); padding: 12px 16px;
+            background: rgba(249, 249, 249, 0.95); backdrop-filter: blur(15px);
+            border-bottom: 1px solid var(--border-light); padding: 16px;
         }
 
         .search-box {
-            display: flex; background: var(--bg-accent);
-            border: 1px solid var(--glass-border); border-radius: 10px;
-            padding: 2px 12px; align-items: center; margin-bottom: 12px;
+            display: flex; background: var(--card-bg);
+            border: 1px solid var(--border-light); border-radius: 12px;
+            padding: 4px 16px; align-items: center; margin-bottom: 16px;
+            box-shadow: var(--shadow-soft);
         }
 
         #searchInput {
             flex-grow: 1; background: transparent; border: none; outline: none;
-            color: var(--text-primary); font-size: 16px; padding: 10px 0;
-            font-family: inherit;
+            color: var(--text-main); font-size: 18px; padding: 12px 0;
+            font-family: inherit; font-weight: 500;
         }
 
-        /* 필터 그리드 */
+        /* 필터 그리드 (3열) */
         .filter-section { margin-top: 4px; }
         
         .all-btn {
-            width: 100%; padding: 10px; margin-bottom: 10px;
-            background: var(--glass-bg); border: 1px solid var(--glass-border);
-            color: var(--text-primary); border-radius: 8px; font-weight: 700;
-            font-size: 14px; cursor: pointer;
+            width: 100%; padding: 14px; margin-bottom: 12px;
+            background: var(--card-bg); border: 1.5px solid var(--border-light);
+            color: var(--text-main); border-radius: 10px; font-weight: 800;
+            font-size: 16px; cursor: pointer; transition: all 0.2s;
+            box-shadow: var(--shadow-soft);
         }
-        .all-btn.active { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
+        .all-btn.active { border-color: var(--gold-premium); color: #fff; background: var(--gold-premium); }
 
         .filter-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
-            max-height: 160px; overflow-y: auto; padding-right: 4px;
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+            max-height: 250px; /* 높이 확장 */
+            overflow-y: auto; padding-bottom: 15px;
         }
 
         .filter-item {
-            padding: 8px 2px; background: var(--glass-bg);
-            border: 1px solid var(--glass-border); border-radius: 6px;
-            color: var(--text-secondary); font-size: 11px; text-align: center;
-            cursor: pointer; transition: all 0.2s;
-            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            display: flex; align-items: center; justify-content: center;
+            height: 60px; /* 버튼 높이 확보 */
+            padding: 10px 4px; background: var(--card-bg);
+            border: 1.5px solid var(--border-light); border-radius: 10px;
+            color: var(--text-muted); font-size: 16px; font-weight: 700;
+            text-align: center; cursor: pointer; transition: all 0.2s;
+            box-shadow: var(--shadow-soft);
+            word-break: keep-all; line-height: 1.2;
         }
 
         .filter-item.active {
-            border-color: var(--gold); color: var(--gold); background: var(--gold-dim);
-            font-weight: 700;
+            border-color: var(--gold-premium); color: #fff; background: var(--gold-premium);
+            box-shadow: var(--shadow-medium);
         }
 
-        /* 결과 창 */
+        /* 결과 리스트 (카드 UI) */
         .results-container { flex-grow: 1; padding: 16px; }
-        .status-msg { text-align: center; color: var(--text-secondary); margin-top: 30px; font-size: 13px; line-height: 1.6; }
+        .status-msg { text-align: center; color: var(--text-muted); margin-top: 40px; font-size: 15px; line-height: 1.6; }
 
-        .match-item { margin-bottom: 20px; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .match-header { font-size: 12px; color: var(--gold); margin-bottom: 6px; font-weight: 600; opacity: 0.8; }
-        .match-text {
-            background: var(--glass-bg); border-left: 2px solid var(--gold);
-            padding: 12px 14px; border-radius: 0 6px 6px 0;
-            font-size: 15px; line-height: 1.7; color: var(--text-primary);
+        .match-item { 
+            margin-bottom: 16px; 
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: var(--shadow-soft);
+            border: 1px solid var(--border-light);
+            animation: fadeIn 0.4s ease; 
             cursor: pointer;
+        }
+        .match-item:active { background-color: #f1f1f1; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .match-header { 
+            font-size: 13px; color: var(--gold-active); margin-bottom: 8px; 
+            font-weight: 700; letter-spacing: -0.5px;
+        }
+        .match-text {
+            font-size: 16px; line-height: 1.6; color: var(--text-main);
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+            overflow: hidden; text-overflow: ellipsis;
+            font-family: 'Noto Sans KR', sans-serif;
         }
 
         .load-more-btn {
-            display: block; width: 100%; padding: 14px; margin: 20px 0 40px;
-            background: transparent; border: 1px solid var(--gold-dim);
-            color: var(--gold); border-radius: 10px; font-size: 14px;
+            display: block; width: 100%; padding: 16px; margin: 20px 0 40px;
+            background: var(--card-bg); border: 1.5px solid var(--gold-premium);
+            color: var(--gold-premium); border-radius: 12px; font-size: 16px; font-weight: 700;
         }
 
         /* 푸터 */
-        .app-footer { padding: 30px; text-align: center; border-top: 1px solid var(--glass-border); opacity: 0.6; }
-        .pc-link { color: var(--text-secondary); text-decoration: none; font-size: 12px; border-bottom: 1px solid #444; }
+        .app-footer { padding: 40px 20px; text-align: center; border-top: 1px solid var(--border-light); }
+        .pc-link { color: var(--text-muted); text-decoration: none; font-size: 14px; border-bottom: 1px solid #ddd; }
 
-        /* 독서 레이어 */
+        /* 독서 레이어 (전면형) */
         #readerLayer {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.96); backdrop-filter: blur(25px);
+            background: var(--bg-paper); /* 종이 질감 미색 */
             z-index: 200; display: none; flex-direction: column;
+            animation: slideUp 0.3s ease-out;
         }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-        .reader-header { padding: 14px 20px; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
-        .reader-title { font-size: 16px; font-weight: 700; color: var(--gold); }
-        .close-btn { font-size: 28px; color: var(--text-primary); background: transparent; border: none; padding: 8px; }
+        .reader-header { 
+            padding: 16px 20px; border-bottom: 1px solid var(--border-light); 
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-paper);
+        }
+        .reader-title { font-size: 18px; font-weight: 800; color: var(--gold-active); }
+        .close-btn { font-size: 32px; color: var(--text-main); background: transparent; border: none; padding: 0 10px; cursor: pointer; }
 
-        .reader-content { flex-grow: 1; overflow-y: auto; padding: 25px 20px 100px; line-height: 2.1; font-size: 17px; }
-        .reader-content h2 { color: var(--gold); font-size: 19px; border-bottom: 1px solid var(--gold-dim); padding-bottom: 8px; margin-top: 35px; }
-        .reader-content h3 { color: var(--gold-hover); font-size: 15px; margin-top: 25px; opacity: 0.9; }
-        .reader-content p { color: var(--text-primary); margin-bottom: 18px; }
-        .highlight-verse { color: var(--gold) !important; font-weight: 700; background: rgba(212, 175, 55, 0.1); padding: 4px; border-radius: 4px; border-left: 2px solid var(--gold); padding-left: 10px; }
+        .reader-content { 
+            flex-grow: 1; overflow-y: auto; padding: 30px 24px 120px; 
+            line-height: 2.2; font-size: 19px; 
+            font-family: 'Nanum Myeongjo', serif; /* 우아한 명조체 */
+            color: #333;
+        }
+        .reader-content h2 { color: var(--gold-active); font-size: 22px; border-bottom: 2px solid var(--gold-premium); padding-bottom: 10px; margin-top: 40px; font-weight: 800; }
+        .reader-content h3 { color: #555; font-size: 17px; margin-top: 30px; border-left: 4px solid var(--gold-premium); padding-left: 12px; }
+        .reader-content p { margin-bottom: 22px; text-align: justify; }
+        .highlight-verse { 
+            color: #000 !important; font-weight: 800; 
+            background: rgba(212, 175, 55, 0.12); 
+            padding: 8px 12px; border-radius: 6px; 
+            border-left: 5px solid var(--gold-premium); 
+            box-shadow: var(--shadow-soft);
+        }
     </style>
 </head>
 <body>
     <div class="mobile-container">
         <header class="app-header">
             <div class="search-box">
-                <input type="text" id="searchInput" placeholder="성구/초성 검색..." autocomplete="off">
+                <input type="text" id="searchInput" placeholder="성구 또는 초성을 입력하세요..." autocomplete="off">
             </div>
             <div class="filter-section">
-                <button id="allFilterBtn" class="all-btn active">전체 경전</button>
+                <button id="allFilterBtn" class="all-btn active">전체 경전 검색</button>
                 <div id="filterGrid" class="filter-grid"></div>
             </div>
         </header>
 
         <main class="results-container" id="resultsContainer">
             <div class="status-msg" id="statusMsg">
-                <strong>성구(原典) 검색 v1.1 M</strong><br>
-                경전을 선택하거나 검색어를 입력하세요.
+                <strong>성구(原典) 검색 v1.5</strong><br>
+                고가독성 라이트 에디션 활성화됨.<br><br>
+                필터를 선택하거나 검색어를 입력하세요.
             </div>
         </main>
 
         <footer class="app-footer">
-            <a href="index.html?mode=pc" class="pc-link">PC 버전으로 보기</a>
+            <a href="index.html?mode=pc" class="pc-link">PC 버전(Hyunmu)으로 전환</a>
         </footer>
     </div>
 
-    <!-- 상세 열람 레이어 -->
+    <!-- 상세 열람 레이어 (전면 레이어) -->
     <div id="readerLayer">
         <header class="reader-header">
             <span class="reader-title" id="readerTitle">성구 전문</span>
@@ -157,7 +197,7 @@
         let SELECTED_BOOK = 'all';
         let ALL_RESULTS = [];
         let CURRENT_PAGE = 0;
-        const PAGE_SIZE = 20;
+        const PAGE_SIZE = 25;
         let searchTimer = null;
 
         const CHOSEONG = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
@@ -168,15 +208,15 @@
                 BIBLE_LIST = Object.keys(BIBLE_DATA).sort();
                 initFilters();
             } else {
-                document.getElementById('statusMsg').innerHTML = "데이터 로드 실패 (data.js)";
+                document.getElementById('statusMsg').innerHTML = "경전 데이터를 불러올 수 없습니다. (data.js 확인 필요)";
             }
 
-            // 검색 입력 (실시간 - Debounce)
+            // 실시간 검색 디바운싱
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 clearTimeout(searchTimer);
                 searchTimer = setTimeout(() => {
                     performSearch();
-                }, 200);
+                }, 300);
             });
 
             document.getElementById('allFilterBtn').addEventListener('click', () => {
@@ -184,29 +224,34 @@
             });
 
             document.getElementById('closeReader').addEventListener('click', () => {
-                document.getElementById('readerLayer').style.display = 'none';
+                const layer = document.getElementById('readerLayer');
+                layer.style.display = 'none';
                 document.body.style.overflow = 'auto';
             });
         });
 
-        function getShortName(fullName) {
+        // 명칭 학장: 3~5자 정규 명칭으로 복구
+        function getPremiumName(fullName) {
             let name = fullName.split('(')[0].trim();
-            // 특수 약칙
-            if (name === "천지개벽경") return "개벽경";
-            if (name === "대순전경") return "대순전";
-            if (name === "증산도 도전") return "도전";
-            if (name === "화은당실기") return "화은당";
             
-            if (name.length > 4) return name.substring(0, 3);
+            // 핵심 경전 명칭 보정 (요청사항 반영)
+            if (name.includes("천지개벽경")) return "천지개벽경";
+            if (name.includes("대순전경")) return "대순전경";
+            if (name.includes("증산도 도전")) return "증산도도전";
+            if (name.includes("화은당실기")) return "화은당실기";
+            if (name.includes("정영규")) return "천지개벽경";
+            
+            if (name.length > 5) return name.substring(0, 5);
             return name;
         }
 
         function initFilters() {
             const grid = document.getElementById('filterGrid');
+            grid.innerHTML = ""; // 초기화
             BIBLE_LIST.forEach(book => {
                 const btn = document.createElement('div');
                 btn.className = 'filter-item';
-                btn.textContent = getShortName(book);
+                btn.textContent = getPremiumName(book);
                 btn.onclick = () => setFilter(book);
                 btn.id = `filter-${book.replace(/\s+/g, '-')}`;
                 grid.appendChild(btn);
@@ -216,14 +261,15 @@
         function setFilter(book) {
             SELECTED_BOOK = book;
             
-            // UI 업데이트
+            // 필터 UI 활성화 상태 변경
             document.querySelectorAll('.filter-item').forEach(el => el.classList.remove('active'));
             document.getElementById('allFilterBtn').classList.remove('active');
             
             if (book === 'all') {
                 document.getElementById('allFilterBtn').classList.add('active');
             } else {
-                const target = document.getElementById(`filter-${book.replace(/\s+/g, '-')}`);
+                const targetId = `filter-${book.replace(/\s+/g, '-')}`;
+                const target = document.getElementById(targetId);
                 if (target) target.classList.add('active');
             }
 
@@ -248,7 +294,7 @@
             const container = document.getElementById('resultsContainer');
             
             if (!query && SELECTED_BOOK === 'all') {
-                container.innerHTML = `<div class="status-msg">경전을 선택하거나 검색어를 입력하세요.</div>`;
+                container.innerHTML = `<div class="status-msg"><strong>성구(原典) 검색 v1.5</strong><br>필터를 선택하거나 검색어를 입력하세요.</div>`;
                 return;
             }
 
@@ -258,22 +304,39 @@
             const targetBooks = SELECTED_BOOK === 'all' ? BIBLE_LIST : [SELECTED_BOOK];
 
             targetBooks.forEach(bookName => {
-                const text = BIBLE_DATA[bookName].replace(/!\[.*?\]\(.*?\)/g, '').replace(/<\/?[^>]+(>|$)/g, "");
-                const lines = text.split('\n');
+                const rawContent = BIBLE_DATA[bookName];
+                // 마크다운 문법 제거
+                const cleanContent = rawContent.replace(/!\[.*?\]\(.*?\)/g, '').replace(/<\/?[^>]+(>|$)/g, "");
+                const lines = cleanContent.split('\n');
+                
                 let currentChapter = "";
                 let currentVerse = "";
 
                 for (let line of lines) {
                     line = line.trim();
                     if (!line) continue;
-                    if (line.startsWith('## ')) currentChapter = line.replace('##', '').trim();
-                    else if (line.startsWith('### ')) currentVerse = line.replace('###', '').trim();
-                    else if (!line.startsWith('#')) {
-                        const rawLine = line.toLowerCase().replace(/\s+/g, '');
-                        // 쿼리가 없으면 필터링된 모든 라인을 보여줌 (필터 선택 시)
-                        if (!query || rawLine.includes(query) || getChoseong(rawLine).includes(query)) {
-                            ALL_RESULTS.push({ book: bookName, chapter: currentChapter, verse: currentVerse, text: line });
-                        }
+                    
+                    if (line.startsWith('## ')) {
+                        currentChapter = line.replace('##', '').trim();
+                        continue;
+                    }
+                    if (line.startsWith('### ')) {
+                        currentVerse = line.replace('###', '').trim();
+                        continue;
+                    }
+                    if (line.startsWith('#')) continue;
+
+                    const searchLine = line.toLowerCase().replace(/\s+/g, '');
+                    
+                    // 필터만 선택된 경우 또는 검색어 일치 시
+                    if (!query || searchLine.includes(query) || getChoseong(searchLine).includes(query)) {
+                        ALL_RESULTS.push({ 
+                            book: bookName, 
+                            displayBook: getPremiumName(bookName),
+                            chapter: currentChapter, 
+                            verse: currentVerse, 
+                            text: line 
+                        });
                     }
                 }
             });
@@ -283,10 +346,13 @@
 
         function renderResults() {
             const container = document.getElementById('resultsContainer');
-            if (CURRENT_PAGE === 0) container.innerHTML = "";
+            if (CURRENT_PAGE === 0) {
+                container.innerHTML = "";
+                window.scrollTo(0, 0);
+            }
 
             if (ALL_RESULTS.length === 0) {
-                container.innerHTML = `<div class="status-msg">결과가 없습니다.</div>`;
+                container.innerHTML = `<div class="status-msg">해당하는 성구가 없습니다.</div>`;
                 return;
             }
 
@@ -295,43 +361,60 @@
             chunk.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'match-item';
+                
+                // [경전명 | 장:절 | 본문 요약] 형태 구현
+                const locStr = `${item.chapter}${item.verse ? ' ' + item.verse : ''}`;
+                
                 div.innerHTML = `
-                    <div class="match-header">${item.book} > ${item.chapter} ${item.verse ? '> ' + item.verse: ''}</div>
-                    <div class="match-text" onclick="openReader('${item.book}', '${item.text}')">${item.text}</div>
+                    <div class="match-header">${item.displayBook} | ${locStr}</div>
+                    <div class="match-text">${item.text}</div>
                 `;
+                div.onclick = () => openReader(item.book, item.text);
                 container.appendChild(div);
             });
 
-            const moreBtn = document.getElementById('loadMoreBtn');
-            if (moreBtn) moreBtn.remove();
+            // 더보기 버튼 관리
+            const oldBtn = document.getElementById('loadMoreBtn');
+            if (oldBtn) oldBtn.remove();
 
             if (ALL_RESULTS.length > (CURRENT_PAGE + 1) * PAGE_SIZE) {
                 const btn = document.createElement('button');
                 btn.id = 'loadMoreBtn';
                 btn.className = 'load-more-btn';
-                btn.textContent = `결과 더보기 (${(CURRENT_PAGE + 1) * PAGE_SIZE}/${ALL_RESULTS.length})`;
-                btn.onclick = () => { CURRENT_PAGE++; renderResults(); };
+                btn.textContent = `결과 더보기 (${(CURRENT_PAGE + 1) * PAGE_SIZE} / ${ALL_RESULTS.length})`;
+                btn.onclick = (e) => { 
+                    e.stopPropagation();
+                    CURRENT_PAGE++; 
+                    renderResults(); 
+                };
                 container.appendChild(btn);
             }
         }
 
-        function openReader(bookName, verseText) {
+        // 전면 레이어 열람 로직
+        function openReader(bookName, targetText) {
             const layer = document.getElementById('readerLayer');
             const content = document.getElementById('readerContent');
             const title = document.getElementById('readerTitle');
 
-            title.textContent = bookName;
-            const lines = BIBLE_DATA[bookName].replace(/!\[.*?\]\(.*?\)/g, '').replace(/<\/?[^>]+(>|$)/g, "").split('\n');
+            title.textContent = getPremiumName(bookName);
+            
+            // 원문 데이터 처리 (이미지 제외)
+            const rawData = BIBLE_DATA[bookName].replace(/!\[.*?\]\(.*?\)/g, '');
+            const lines = rawData.split('\n');
             
             let html = "";
             lines.forEach(line => {
                 line = line.trim();
                 if (!line) return;
-                if (line.startsWith('## ')) html += `<h2>${line.replace('##', '')}</h2>`;
-                else if (line.startsWith('### ')) html += `<h3>${line.replace('###', '')}</h3>`;
-                else if (!line.startsWith('#')) {
-                    const isMatch = (line === verseText);
-                    html += `<p class="${isMatch?'highlight-verse':''}" ${isMatch?'id="target-verse"':''}>${line}</p>`;
+                
+                if (line.startsWith('## ')) {
+                    html += `<h2>${line.replace('##', '').trim()}</h2>`;
+                } else if (line.startsWith('### ')) {
+                    html += `<h3>${line.replace('###', '').trim()}</h3>`;
+                } else if (!line.startsWith('#')) {
+                    const isTarget = (line === targetText);
+                    html += `<p class="${isTarget ? 'highlight-verse' : ''}" ${isTarget ? 'id="active-target"' : ''}>${line}</p>`;
                 }
             });
 
@@ -339,11 +422,15 @@
             layer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
+            // 검색된 구절로 스크롤
             setTimeout(() => {
-                const target = document.getElementById('target-verse');
-                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                else content.scrollTop = 0;
-            }, 100);
+                const targetEl = document.getElementById('active-target');
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    content.scrollTop = 0;
+                }
+            }, 200);
         }
     </script>
 </body>
