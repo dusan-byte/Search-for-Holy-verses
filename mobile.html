@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>성구(原典) 검색 v1.5.3 M (Logic Refined)</title>
+    <title>성구(原典) 검색 v1.5.4 M (Data Specialized)</title>
     <!-- 구글 폰트: 나눔 명조(본문용), 폰트(Gothic) -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -313,16 +313,17 @@
                 let currentVerse = "";
                 const seenKeys = new Set(); 
 
-                // 핀셋 로직: 오직 안원전 본만 Chapter 단위 그룹화
                 const isAnwonjeon = bookName.includes('안원전');
 
                 for (let line of lines) {
                     line = line.trim();
                     if (!line) continue;
                     
-                    if (line.startsWith('## ')) {
+                    // 안원전 데이터 특수 분리 로직: 서(序) 내부에서 신축년 기점 분할
+                    if (isAnwonjeon && line.includes("天地開闢經 第一篇 辛丑年")) {
+                        currentChapter = "천지개벽경 제1편 신축년";
+                    } else if (line.startsWith('## ')) {
                         currentChapter = line.replace('##', '').trim();
-                        // 헤더 자체가 검색어 검색에 포함되어야 '제1편 신축년' 등을 직접 찾을 수 있음
                     } else if (line.startsWith('### ')) {
                         currentVerse = line.replace('###', '').trim();
                     }
@@ -338,11 +339,8 @@
                         }
 
                         if (!seenKeys.has(key)) {
-                            // 리스트에 표시할 텍스트 결정: 헤더인 경우 헤더 텍스트, 본문인 경우 본문 텍스트
                             let displayLine = line;
-                            if (line.startsWith('#')) {
-                                displayLine = line.replace(/^#+\s+/, '');
-                            }
+                            if (line.startsWith('#')) displayLine = line.replace(/^#+\s+/, '');
 
                             ALL_RESULTS.push({ 
                                 book: bookName, 
@@ -425,7 +423,13 @@
                 line = line.trim();
                 if (!line) return;
                 
-                if (line.startsWith('## ')) {
+                // 전면 레이어 열람 시에도 가상 목차 분리 로직 동일 적용
+                if (bookName.includes('안원전') && line.includes("天地開闢經 第一篇 辛丑年")) {
+                    currentChapter = "천지개벽경 제1편 신축년";
+                    const chapId = `chap-virtual-${idx}`;
+                    html += `<h2 id="${chapId}">${currentChapter}</h2>`;
+                    if (isAggregated && currentChapter === targetChapter && !firstMatchId) firstMatchId = chapId;
+                } else if (line.startsWith('## ')) {
                     currentChapter = line.replace('##', '').trim();
                     const chapId = `chap-${idx}`;
                     html += `<h2 id="${chapId}">${currentChapter}</h2>`;
