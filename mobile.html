@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>성구(原典) 검색 v1.5.6 M (Hard-coded Logic)</title>
+    <title>성구(原典) 검색 v1.5.7 M (Precision Engine)</title>
     <!-- 구글 폰트: 나눔 명조(본문용), 폰트(Gothic) -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -312,7 +312,6 @@
                     let processedLine = line.trim();
                     if (!processedLine) continue;
                     
-                    // [Hard-coding] 안원전 제1편 신축년 한자 강제 치환 및 목차 분리
                     if (isAnwonjeon && processedLine.includes("天地開闢經 第一篇 辛丑年")) {
                         processedLine = processedLine.replace("天地開闢經 第一篇 辛丑年", "천지개벽경 제1편 신축년");
                         currentChapter = "천지개벽경 제1편 신축년";
@@ -369,14 +368,13 @@
             chunk.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'match-item';
-                
                 const locStr = `${item.chapter}${item.verse ? ' ' + item.verse : ''}`;
-                
                 div.innerHTML = `
                     <div class="match-header">${item.displayBook} | ${locStr}</div>
                     <div class="match-text">${item.text}</div>
                 `;
-                div.onclick = () => openReader(item.book, item.text, item.chapter, item.isAggregated, item.query);
+                // Precise passing of identification data
+                div.onclick = () => openReader(item.book, item.chapter, item.verse, item.isAggregated, item.query);
                 container.appendChild(div);
             });
 
@@ -396,68 +394,66 @@
             }
         }
 
-        function openReader(bookName, targetText, targetChapter, isAggregated, highlightQuery) {
+        function openReader(bookName, targetChapter, targetVerse, isAggregated, highlightQuery) {
             const layer = document.getElementById('readerLayer');
             const content = document.getElementById('readerContent');
             const title = document.getElementById('readerTitle');
-            title.textContent = getPremiumName(bookName);
+            
+            // Re-label Anwonjeon if needed for the title
+            let displayTitle = getPremiumName(bookName);
+            title.textContent = displayTitle;
             
             const rawData = BIBLE_DATA[bookName].replace(/!\[.*?\]\(.*?\)/g, '');
             const lines = rawData.split('\n');
             
             let html = "";
             let currentChapter = "";
-            let firstMatchId = "";
+            let currentVerse = "";
+            let sectionStarted = false;
 
             lines.forEach((line, idx) => {
                 let processedLine = line.trim();
                 if (!processedLine) return;
                 
-                // 전면 레이어 열람 시에도 한자 강제 치환 및 가상 목차 적용
+                // Anwonjeon Split Logic (Same as Search)
                 if (bookName.includes('안원전') && processedLine.includes("天地開闢經 第一篇 辛丑年")) {
                     processedLine = processedLine.replace("天地開闢經 第一篇 辛丑年", "천지개벽경 제1편 신축년");
                     currentChapter = "천지개벽경 제1편 신축년";
-                    const chapId = `chap-virtual-${idx}`;
-                    html += `<h2 id="${chapId}" style="color:var(--gold-active); border-bottom:2px solid var(--gold-premium); padding-bottom:10px; margin-top:40px; font-weight:800;">${currentChapter}</h2>`;
-                    if (isAggregated && currentChapter === targetChapter && !firstMatchId) firstMatchId = chapId;
+                    currentVerse = "";
                 } else if (processedLine.startsWith('## ')) {
                     currentChapter = processedLine.replace('##', '').trim();
-                    const chapId = `chap-${idx}`;
-                    html += `<h2 id="${chapId}">${currentChapter}</h2>`;
-                    if (isAggregated && currentChapter === targetChapter && !firstMatchId) firstMatchId = chapId;
                 } else if (processedLine.startsWith('### ')) {
-                    const verseId = `verse-${idx}`;
-                    html += `<h3 id="${verseId}">${processedLine.replace('###', '').trim()}</h3>`;
-                } else if (!processedLine.startsWith('#')) {
-                    const cleanLine = processedLine.toLowerCase().replace(/\s+/g, '');
-                    let isMatch = false;
-                    
-                    if (isAggregated) {
-                        if (currentChapter === targetChapter && highlightQuery && (cleanLine.includes(highlightQuery) || getChoseong(cleanLine).includes(highlightQuery))) {
-                            isMatch = true;
+                    currentVerse = processedLine.replace('###', '').trim();
+                }
+
+                // Filtering Logic (Only show target section)
+                let isInTargetSection = false;
+                if (isAggregated) {
+                   if (currentChapter === targetChapter) isInTargetSection = true;
+                } else {
+                   if (currentChapter === targetChapter && currentVerse === targetVerse) isInTargetSection = true;
+                }
+
+                if (isInTargetSection) {
+                    if (processedLine.startsWith('## ')) {
+                        html += `<h2 style="color:var(--gold-active); border-bottom:2px solid var(--gold-premium); padding-bottom:10px; margin-top:10px; font-weight:800;">${currentChapter}</h2>`;
+                    } else if (processedLine.startsWith('### ')) {
+                        html += `<h3>${currentVerse}</h3>`;
+                    } else if (!processedLine.startsWith('#')) {
+                        const cleanLine = processedLine.toLowerCase().replace(/\s+/g, '');
+                        let shouldHighlight = false;
+                        if (highlightQuery && (cleanLine.includes(highlightQuery) || getChoseong(cleanLine).includes(highlightQuery))) {
+                            shouldHighlight = true;
                         }
-                    } else {
-                        // targetText도 치환 과정에서 한글로 바뀌었을 가능성 고려
-                        isMatch = (processedLine === targetText);
+                        html += `<p class="${shouldHighlight ? 'highlight-verse' : ''}">${processedLine}</p>`;
                     }
-                    const lineId = `line-${idx}`;
-                    if (isMatch && !firstMatchId) firstMatchId = lineId;
-                    html += `<p class="${isMatch ? 'highlight-verse' : ''}" id="${lineId}">${processedLine}</p>`;
                 }
             });
 
-            content.innerHTML = html;
+            content.innerHTML = html || "<p style='text-align:center; padding-top:40px;'>해당 섹션의 내용을 찾을 수 없습니다.</p>";
             layer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-
-            setTimeout(() => {
-                const targetEl = document.getElementById(firstMatchId);
-                if (targetEl) {
-                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    content.scrollTop = 0;
-                }
-            }, 250);
+            content.scrollTop = 0;
         }
     </script>
 </body>
