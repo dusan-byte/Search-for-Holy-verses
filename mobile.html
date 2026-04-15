@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>성구(原典) 검색 v1.5.1 M (Fixed)</title>
+    <title>성구(原典) 검색 v1.5.2 M (Grouping Engine)</title>
     <!-- 구글 폰트: 나눔 명조(본문용), 폰트(Gothic) -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -236,11 +236,14 @@
             let name = fullName.split('(')[0].trim();
             
             // 핵심 경전 명칭 보정 (요청사항 반영)
+            if (fullName.includes("안원전")) return "안원전본의";
+            if (fullName.includes("정영규")) return "천지개벽경";
+            if (fullName.includes("이중성")) return "천지해원경"; 
+
             if (name.includes("천지개벽경")) return "천지개벽경";
             if (name.includes("대순전경")) return "대순전경";
             if (name.includes("증산도 도전")) return "증산도도전";
             if (name.includes("화은당실기")) return "화은당실기";
-            if (name.includes("정영규")) return "천지개벽경";
             
             if (name.length > 5) return name.substring(0, 5);
             return name;
@@ -312,7 +315,10 @@
                 
                 let currentChapter = "";
                 let currentVerse = "";
-                const seenKeys = new Set(); // Grouping: 중복 제거용
+                const seenKeys = new Set(); 
+
+                // 타겟 통합 로직 여부 판별 (안원전 본)
+                const isAnwonjeon = bookName.includes('안원전');
 
                 for (let line of lines) {
                     line = line.trim();
@@ -330,17 +336,26 @@
 
                     const searchLine = line.toLowerCase().replace(/\s+/g, '');
                     
-                    // 필터만 선택된 경우 또는 검색어 일치 시
                     if (!query || searchLine.includes(query) || getChoseong(searchLine).includes(query)) {
-                        // [경전명 + 장 + 절] 단위로 그룹화 (중복 표시 방지)
-                        const key = `${bookName}-${currentChapter}-${currentVerse}`;
+                        // 중복 제거 키 설정
+                        let key;
+                        if (isAnwonjeon) {
+                            // 안원전본의 경우 Chapter(연도/편) 단위로 크게 그룹화
+                            key = `${bookName}-${currentChapter}`;
+                        } else {
+                            // 그 외 경전은 기존 [Chapter + Verse] 단위 유지
+                            key = `${bookName}-${currentChapter}-${currentVerse}`;
+                        }
+
                         if (!seenKeys.has(key)) {
                             ALL_RESULTS.push({ 
                                 book: bookName, 
                                 displayBook: getPremiumName(bookName),
                                 chapter: currentChapter, 
-                                verse: currentVerse, 
-                                text: line // 첫 번째 매칭 구절을 요약으로 사용
+                                verse: isAnwonjeon ? "" : currentVerse, 
+                                text: line,
+                                isAggregated: isAnwonjeon,
+                                query: query 
                             });
                             seenKeys.add(key);
                         }
@@ -369,14 +384,13 @@
                 const div = document.createElement('div');
                 div.className = 'match-item';
                 
-                // [경전명 | 장:절 | 본문 요약] 형태 구현
                 const locStr = `${item.chapter}${item.verse ? ' ' + item.verse : ''}`;
                 
                 div.innerHTML = `
                     <div class="match-header">${item.displayBook} | ${locStr}</div>
                     <div class="match-text">${item.text}</div>
                 `;
-                div.onclick = () => openReader(item.book, item.text);
+                div.onclick = () => openReader(item.book, item.text, item.chapter, item.isAggregated, item.query);
                 container.appendChild(div);
             });
 
@@ -399,29 +413,53 @@
         }
 
         // 전면 레이어 열람 로직
-        function openReader(bookName, targetText) {
+        function openReader(bookName, targetText, targetChapter, isAggregated, highlightQuery) {
             const layer = document.getElementById('readerLayer');
             const content = document.getElementById('readerContent');
             const title = document.getElementById('readerTitle');
 
             title.textContent = getPremiumName(bookName);
             
-            // 원문 데이터 처리 (이미지 제외)
             const rawData = BIBLE_DATA[bookName].replace(/!\[.*?\]\(.*?\)/g, '');
             const lines = rawData.split('\n');
             
             let html = "";
-            lines.forEach(line => {
+            let currentChapter = "";
+            let firstMatchInChapterId = "";
+
+            lines.forEach((line, idx) => {
                 line = line.trim();
                 if (!line) return;
                 
                 if (line.startsWith('## ')) {
-                    html += `<h2>${line.replace('##', '').trim()}</h2>`;
+                    currentChapter = line.replace('##', '').trim();
+                    const chapId = `chap-${idx}`;
+                    html += `<h2 id="${chapId}">${currentChapter}</h2>`;
+                    if (isAggregated && currentChapter === targetChapter && !firstMatchInChapterId) {
+                        firstMatchInChapterId = chapId;
+                    }
                 } else if (line.startsWith('### ')) {
                     html += `<h3>${line.replace('###', '').trim()}</h3>`;
                 } else if (!line.startsWith('#')) {
-                    const isTarget = (line === targetText);
-                    html += `<p class="${isTarget ? 'highlight-verse' : ''}" ${isTarget ? 'id="active-target"' : ''}>${line}</p>`;
+                    const cleanLine = line.toLowerCase().replace(/\s+/g, '');
+                    let isMatch = false;
+                    
+                    if (isAggregated) {
+                        // 안원전 통합 뷰: 해당 챕터 내의 매칭되는 모든 구절 하이라이트
+                        if (currentChapter === targetChapter) {
+                            if (highlightQuery && (cleanLine.includes(highlightQuery) || getChoseong(cleanLine).includes(highlightQuery))) {
+                                isMatch = true;
+                            }
+                        }
+                    } else {
+                        // 일반 뷰: 선택한 특정 구절 하이라이트
+                        isMatch = (line === targetText);
+                    }
+
+                    const lineId = isMatch ? `match-${idx}` : "";
+                    if (isMatch && !firstMatchInChapterId) firstMatchInChapterId = lineId;
+
+                    html += `<p class="${isMatch ? 'highlight-verse' : ''}" ${lineId ? 'id="' + lineId + '"' : ''}>${line}</p>`;
                 }
             });
 
@@ -429,15 +467,16 @@
             layer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
-            // 검색된 구절로 스크롤
+            // 위치 이동
             setTimeout(() => {
-                const targetEl = document.getElementById('active-target');
+                const targetId = isAggregated ? firstMatchInChapterId : (document.querySelector('.highlight-verse')?.id || "");
+                const targetEl = document.getElementById(targetId);
                 if (targetEl) {
                     targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 } else {
                     content.scrollTop = 0;
                 }
-            }, 200);
+            }, 250);
         }
     </script>
 </body>
