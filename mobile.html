@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>성구(原典) 검색 v1.5.4 M (Data Specialized)</title>
+    <title>성구(原典) 검색 v1.5.5 M (Final Tuning)</title>
     <!-- 구글 폰트: 나눔 명조(본문용), 폰트(Gothic) -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -103,7 +103,7 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         .match-header { 
-            font-size: 13px; color: var(--gold-active); margin-bottom: 6px; 
+            font-size: 13px; color: var(--gold-active); margin-bottom: 8px; 
             font-weight: 700; letter-spacing: -0.5px;
         }
         .match-text {
@@ -213,7 +213,6 @@
                 document.getElementById('statusMsg').innerHTML = "경전 데이터를 불러올 수 없습니다. (data.js 확인 필요)";
             }
 
-            // 실시간 검색 디바운싱
             document.getElementById('searchInput').addEventListener('input', (e) => {
                 clearTimeout(searchTimer);
                 searchTimer = setTimeout(() => {
@@ -262,10 +261,8 @@
 
         function setFilter(book) {
             SELECTED_BOOK = book;
-            
             document.querySelectorAll('.filter-item').forEach(el => el.classList.remove('active'));
             document.getElementById('allFilterBtn').classList.remove('active');
-            
             if (book === 'all') {
                 document.getElementById('allFilterBtn').classList.add('active');
             } else {
@@ -273,7 +270,6 @@
                 const target = document.getElementById(targetId);
                 if (target) target.classList.add('active');
             }
-
             performSearch();
         }
 
@@ -301,7 +297,6 @@
 
             ALL_RESULTS = [];
             CURRENT_PAGE = 0;
-
             const targetBooks = SELECTED_BOOK === 'all' ? BIBLE_LIST : [SELECTED_BOOK];
 
             targetBooks.forEach(bookName => {
@@ -312,14 +307,13 @@
                 let currentChapter = "";
                 let currentVerse = "";
                 const seenKeys = new Set(); 
-
                 const isAnwonjeon = bookName.includes('안원전');
 
                 for (let line of lines) {
                     line = line.trim();
                     if (!line) continue;
                     
-                    // 안원전 데이터 특수 분리 로직: 서(序) 내부에서 신축년 기점 분할
+                    // 안원전 특수 분리: 한글 명칭 '천지개벽경 제1편 신축년' 강제 적용
                     if (isAnwonjeon && line.includes("天地開闢經 第一篇 辛丑年")) {
                         currentChapter = "천지개벽경 제1편 신축년";
                     } else if (line.startsWith('## ')) {
@@ -329,7 +323,6 @@
                     }
 
                     const searchLine = line.toLowerCase().replace(/\s+/g, '');
-                    
                     if (!query || searchLine.includes(query) || getChoseong(searchLine).includes(query)) {
                         let key;
                         if (isAnwonjeon) {
@@ -356,7 +349,6 @@
                     }
                 }
             });
-
             renderResults();
         }
 
@@ -378,6 +370,7 @@
                 const div = document.createElement('div');
                 div.className = 'match-item';
                 
+                // 안원전 등 통합 레이블: [천지개벽경(안원전) | 천지개벽경 제1편 신축년] 형태 보장
                 const locStr = `${item.chapter}${item.verse ? ' ' + item.verse : ''}`;
                 
                 div.innerHTML = `
@@ -390,7 +383,6 @@
 
             const oldBtn = document.getElementById('loadMoreBtn');
             if (oldBtn) oldBtn.remove();
-
             if (ALL_RESULTS.length > (CURRENT_PAGE + 1) * PAGE_SIZE) {
                 const btn = document.createElement('button');
                 btn.id = 'loadMoreBtn';
@@ -409,7 +401,6 @@
             const layer = document.getElementById('readerLayer');
             const content = document.getElementById('readerContent');
             const title = document.getElementById('readerTitle');
-
             title.textContent = getPremiumName(bookName);
             
             const rawData = BIBLE_DATA[bookName].replace(/!\[.*?\]\(.*?\)/g, '');
@@ -423,11 +414,10 @@
                 line = line.trim();
                 if (!line) return;
                 
-                // 전면 레이어 열람 시에도 가상 목차 분리 로직 동일 적용
                 if (bookName.includes('안원전') && line.includes("天地開闢經 第一篇 辛丑年")) {
                     currentChapter = "천지개벽경 제1편 신축년";
                     const chapId = `chap-virtual-${idx}`;
-                    html += `<h2 id="${chapId}">${currentChapter}</h2>`;
+                    html += `<h2 id="${chapId}" style="color:var(--gold-active); border-bottom:2px solid var(--gold-premium); padding-bottom:10px; margin-top:40px; font-weight:800;">${currentChapter}</h2>`;
                     if (isAggregated && currentChapter === targetChapter && !firstMatchId) firstMatchId = chapId;
                 } else if (line.startsWith('## ')) {
                     currentChapter = line.replace('##', '').trim();
@@ -448,10 +438,8 @@
                     } else {
                         isMatch = (line === targetText);
                     }
-
                     const lineId = `line-${idx}`;
                     if (isMatch && !firstMatchId) firstMatchId = lineId;
-
                     html += `<p class="${isMatch ? 'highlight-verse' : ''}" id="${lineId}">${line}</p>`;
                 }
             });
