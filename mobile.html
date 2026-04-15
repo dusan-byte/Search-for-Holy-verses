@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>성구(原典) 검색 v1.5.5 M (Final Tuning)</title>
+    <title>성구(原典) 검색 v1.5.6 M (Hard-coded Logic)</title>
     <!-- 구글 폰트: 나눔 명조(본문용), 폰트(Gothic) -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -231,7 +231,6 @@
             });
         });
 
-        // 명칭 복구: 사용자가 요청한 전체 명칭 유지
         function getPremiumName(fullName) {
             if (fullName.includes("안원전")) return "천지개벽경(안원전)";
             if (fullName.includes("정영규")) return "천지개벽경(정영규)";
@@ -310,19 +309,20 @@
                 const isAnwonjeon = bookName.includes('안원전');
 
                 for (let line of lines) {
-                    line = line.trim();
-                    if (!line) continue;
+                    let processedLine = line.trim();
+                    if (!processedLine) continue;
                     
-                    // 안원전 특수 분리: 한글 명칭 '천지개벽경 제1편 신축년' 강제 적용
-                    if (isAnwonjeon && line.includes("天地開闢經 第一篇 辛丑年")) {
+                    // [Hard-coding] 안원전 제1편 신축년 한자 강제 치환 및 목차 분리
+                    if (isAnwonjeon && processedLine.includes("天地開闢經 第一篇 辛丑年")) {
+                        processedLine = processedLine.replace("天地開闢經 第一篇 辛丑年", "천지개벽경 제1편 신축년");
                         currentChapter = "천지개벽경 제1편 신축년";
-                    } else if (line.startsWith('## ')) {
-                        currentChapter = line.replace('##', '').trim();
-                    } else if (line.startsWith('### ')) {
-                        currentVerse = line.replace('###', '').trim();
+                    } else if (processedLine.startsWith('## ')) {
+                        currentChapter = processedLine.replace('##', '').trim();
+                    } else if (processedLine.startsWith('### ')) {
+                        currentVerse = processedLine.replace('###', '').trim();
                     }
 
-                    const searchLine = line.toLowerCase().replace(/\s+/g, '');
+                    const searchLine = processedLine.toLowerCase().replace(/\s+/g, '');
                     if (!query || searchLine.includes(query) || getChoseong(searchLine).includes(query)) {
                         let key;
                         if (isAnwonjeon) {
@@ -332,8 +332,8 @@
                         }
 
                         if (!seenKeys.has(key)) {
-                            let displayLine = line;
-                            if (line.startsWith('#')) displayLine = line.replace(/^#+\s+/, '');
+                            let displayLine = processedLine;
+                            if (processedLine.startsWith('#')) displayLine = processedLine.replace(/^#+\s+/, '');
 
                             ALL_RESULTS.push({ 
                                 book: bookName, 
@@ -370,7 +370,6 @@
                 const div = document.createElement('div');
                 div.className = 'match-item';
                 
-                // 안원전 등 통합 레이블: [천지개벽경(안원전) | 천지개벽경 제1편 신축년] 형태 보장
                 const locStr = `${item.chapter}${item.verse ? ' ' + item.verse : ''}`;
                 
                 div.innerHTML = `
@@ -411,24 +410,26 @@
             let firstMatchId = "";
 
             lines.forEach((line, idx) => {
-                line = line.trim();
-                if (!line) return;
+                let processedLine = line.trim();
+                if (!processedLine) return;
                 
-                if (bookName.includes('안원전') && line.includes("天地開闢經 第一篇 辛丑年")) {
+                // 전면 레이어 열람 시에도 한자 강제 치환 및 가상 목차 적용
+                if (bookName.includes('안원전') && processedLine.includes("天地開闢經 第一篇 辛丑年")) {
+                    processedLine = processedLine.replace("天地開闢經 第一篇 辛丑年", "천지개벽경 제1편 신축년");
                     currentChapter = "천지개벽경 제1편 신축년";
                     const chapId = `chap-virtual-${idx}`;
                     html += `<h2 id="${chapId}" style="color:var(--gold-active); border-bottom:2px solid var(--gold-premium); padding-bottom:10px; margin-top:40px; font-weight:800;">${currentChapter}</h2>`;
                     if (isAggregated && currentChapter === targetChapter && !firstMatchId) firstMatchId = chapId;
-                } else if (line.startsWith('## ')) {
-                    currentChapter = line.replace('##', '').trim();
+                } else if (processedLine.startsWith('## ')) {
+                    currentChapter = processedLine.replace('##', '').trim();
                     const chapId = `chap-${idx}`;
                     html += `<h2 id="${chapId}">${currentChapter}</h2>`;
                     if (isAggregated && currentChapter === targetChapter && !firstMatchId) firstMatchId = chapId;
-                } else if (line.startsWith('### ')) {
+                } else if (processedLine.startsWith('### ')) {
                     const verseId = `verse-${idx}`;
-                    html += `<h3 id="${verseId}">${line.replace('###', '').trim()}</h3>`;
-                } else if (!line.startsWith('#')) {
-                    const cleanLine = line.toLowerCase().replace(/\s+/g, '');
+                    html += `<h3 id="${verseId}">${processedLine.replace('###', '').trim()}</h3>`;
+                } else if (!processedLine.startsWith('#')) {
+                    const cleanLine = processedLine.toLowerCase().replace(/\s+/g, '');
                     let isMatch = false;
                     
                     if (isAggregated) {
@@ -436,11 +437,12 @@
                             isMatch = true;
                         }
                     } else {
-                        isMatch = (line === targetText);
+                        // targetText도 치환 과정에서 한글로 바뀌었을 가능성 고려
+                        isMatch = (processedLine === targetText);
                     }
                     const lineId = `line-${idx}`;
                     if (isMatch && !firstMatchId) firstMatchId = lineId;
-                    html += `<p class="${isMatch ? 'highlight-verse' : ''}" id="${lineId}">${line}</p>`;
+                    html += `<p class="${isMatch ? 'highlight-verse' : ''}" id="${lineId}">${processedLine}</p>`;
                 }
             });
 
