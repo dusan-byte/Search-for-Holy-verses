@@ -99,7 +99,7 @@
             text-align: center; cursor: pointer; transition: all 0.2s;
             box-shadow: var(--shadow-soft);
             word-break: keep-all; line-height: 1.1;
-            letter-spacing: -1px;
+            letter-spacing: -1.2px;
             overflow: hidden;
         }
 
@@ -331,15 +331,31 @@
         // --- 유틸리티 및 데이터 처리 ---
 
         function getPremiumName(fullName) {
+            // [특별 관리] 천지개벽경 시리즈
             if (fullName.includes("안원전")) return "천지개벽경(안원전)";
             if (fullName.includes("정영규")) return "천지개벽경(정영규)";
             if (fullName.includes("이중성")) return "천지개벽경(이중성)";
             
+            // [복곡] 대순전경 판본별 독립 복원
+            if (fullName.includes("대순전경")) {
+                if (fullName.includes("초판")) return "대순전경 초판";
+                if (fullName.includes("3판")) return "대순전경 3판";
+                if (fullName.includes("6판")) return "대순전경 6판";
+                return "대순전경";
+            }
+
+            // [정밀 복원] 리드 아키텍트 지시 명칭
+            if (fullName.includes("고부인신정기")) return "고부인신정기";
+            if (fullName.includes("고사모신정기")) return "고사모신정기";
+            if (fullName.includes("보천교 교전")) return "보천교 교전";
+            if (fullName.includes("증산천사공사기")) return "증산천사공사기";
+            
+            // 일반 처리 (괄호 제거 및 공백 정리)
             let name = fullName.split('(')[0].trim();
-            if (name.includes("대순전경")) return "대순전경";
             if (name.includes("증산도 도전")) return "증산도도전";
             if (name.includes("화은당실기")) return "화은당실기";
             
+            // 기타 명칭은 5자 제한 유지 (UI 여백 확보용)
             if (name.length > 5) return name.substring(0, 5);
             return name;
         }
