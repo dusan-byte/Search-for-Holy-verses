@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>성구(原典) 검색 v2.0 Master Edition</title>
+    <title>성구(原典) 검색 v1.0 정식판</title>
+    <!-- 홈 화면 추가 시 앱 아이콘 설정 -->
+    <link rel="icon" href="icon.png" type="image/png">
+    <link rel="apple-touch-icon" href="icon.png">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="성구검색">
     <!-- 구글 폰트: 나눔 명조(본문용), 폰트(Gothic) -->
     <link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Sans+KR:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
@@ -268,8 +274,8 @@
         let CURRENT_CONTEXT = null; // 현재 읽고 있는 구절 정보
 
         const STORAGE_KEYS = {
-            BOOKMARKS: 'ag_mobile_bookmarks_v2',
-            SEARCHES: 'ag_mobile_searches_v2'
+            BOOKMARKS: 'ag_mobile_bookmarks_v1',
+            SEARCHES: 'ag_mobile_searches_v1'
         };
 
         const CHOSEONG = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
