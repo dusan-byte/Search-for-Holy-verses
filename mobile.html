@@ -288,14 +288,14 @@
                 <!-- 역도(易道) 및 현무경 PDF 토글 메뉴 -->
                 <div class="yido-toggle-menu" id="yidoMenu">
                     <div class="yido-toggle-header" onclick="toggleYidoMenu()">
-                        <span>역도(易道) & 현무경(PDF) 열기</span>
+                        <span>역경(易經) & 현무경(PDF) 열기</span>
                         <span class="yido-arrow">▶</span>
                     </div>
                     <div class="yido-content" id="yidoContent">
                         <div style="font-size: 13px; color: #888; font-weight: 600; margin-bottom: 4px;">현무경 (PDF)</div>
                         <div class="yido-item" onclick="openPDF('현무경(법종교).pdf')">📄 현무경 (법종교)</div>
                         <div class="yido-item" onclick="openPDF('현무경(순천도).pdf')">📄 현무경 (순천도)</div>
-                        <div style="font-size: 13px; color: #888; font-weight: 600; margin: 12px 0 4px;">역도 (易道)</div>
+                        <div style="font-size: 13px; color: #888; font-weight: 600; margin: 12px 0 4px;">역경 (易經)</div>
                         <div id="yidoDynamicList"></div>
                     </div>
                 </div>
@@ -372,15 +372,21 @@
             }
 
             document.getElementById('searchInput').addEventListener('input', (e) => {
-                const val = e.target.value;
-                if (!val) {
+                const query = e.target.value.trim();
+                
+                // [수정] 실시간 검색 필터는 유지 (즉시 반영)
+                if (!query) {
                     renderDashboard();
-                    return;
+                } else {
+                    performSearch();
                 }
+
                 clearTimeout(searchTimer);
                 searchTimer = setTimeout(() => {
-                    performSearch();
-                }, 300);
+                    if (query.length >= 2) { 
+                        saveRecentSearch(query); // 1초간 입력 없을 때만 저장
+                    }
+                }, 1000);
             });
 
             document.getElementById('allFilterBtn').addEventListener('click', () => {
@@ -419,7 +425,10 @@
                 titleDiv.className = 'yido-item';
                 titleDiv.style.display = 'flex';
                 titleDiv.style.justifyContent = 'space-between';
-                titleDiv.innerHTML = `<span>📖 ${title}</span><span class="sub-arrow" style="transition:transform 0.3s; font-size:10px;">▶</span>`;
+                
+                // [수정] 역도 -> 역경 명칭만 변경
+                const displayTitle = (title === "역도") ? "역경(易經)" : title;
+                titleDiv.innerHTML = `<span>📖 ${displayTitle}</span><span class="sub-arrow" style="transition:transform 0.3s; font-size:10px;">▶</span>`;
                 
                 const subMenu = document.createElement('div');
                 subMenu.className = 'yido-sub-list';
@@ -704,7 +713,7 @@
                 return;
             }
 
-            if (query) saveRecentSearch(queryRaw.trim());
+            // if (query) saveRecentSearch(queryRaw.trim()); // [삭제] 입력 리스너에서 1초 지연 후 저장하도록 변경됨
 
             ALL_RESULTS = [];
             CURRENT_PAGE = 0;
