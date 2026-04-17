@@ -436,7 +436,6 @@
                         subMenu.style.display = 'block';
                         titleDiv.querySelector('.sub-arrow').style.transform = 'rotate(90deg)';
                     }
-                    loadYeokdoMobile(title);
                 };
 
                 // 서브 목차 추출
@@ -500,9 +499,6 @@
             } else {
                 document.getElementById('readerContent').scrollTop = 0;
             }
-            
-            // 메뉴 닫기 (목차 클릭 시에만)
-            if (targetId) document.getElementById('yidoMenu').classList.remove('open');
         }
 
         function formatMD(text) {
