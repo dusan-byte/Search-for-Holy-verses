@@ -106,11 +106,33 @@
             letter-spacing: 2px;
         }
 
-        .sidebar-header .subtitle {
-            margin: 5px 0 0;
-            font-size: 13px;
-            color: var(--text-secondary);
+        .brand-name {
+            font-size: 20px;
+            color: var(--gold);
+            font-weight: 800;
             letter-spacing: 1px;
+            margin-top: 8px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .sidebar-section-title {
+            padding: 20px 24px 8px;
+            font-size: 12px;
+            color: var(--gold-dim);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 10px;
+        }
+
+        #readerContent {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-family: 'Noto Serif KR', 'Malgun Gothic', serif;
+            color: #eee;
+            font-size: 1.15rem;
         }
 
         .search-container {
@@ -463,6 +485,8 @@
 
             .verse-text {
                 font-size: 16px;
+                white-space: pre-wrap;
+                font-family: 'Noto Serif KR', serif;
             }
         }
     </style>
@@ -472,14 +496,29 @@
     <div class="app-container">
         <aside id="sidebar" class="glass-panel">
             <div class="sidebar-header">
-                <h1>성구(原典) 검색 ver 1.0</h1>
-                <p class="subtitle">항상 깨어 있으라</p>
+                <h1 style="margin: 0; padding: 10px 0; font-size: 20px; color: var(--gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); font-weight: 800;">
+                    성구(原典) 검색 Hyunmu 1.0
+                </h1>
             </div>
             <div class="search-container">
                 <button id="globalSearchBtn" class="global-search-btn">전체 경전 검색</button>
                 <input type="text" id="searchInput" placeholder="성구/초성 검색 (예: ㅈㅅ)">
             </div>
             <div class="book-list-container">
+                <div class="sidebar-section-title">현무경 (PDF)</div>
+                <ul class="book-list">
+                    <li class="book-item">
+                        <div class="book-item-title" onclick="window.open('현무경(법종교).pdf', '_blank')">현무경 (법종교)</div>
+                    </li>
+                    <li class="book-item">
+                        <div class="book-item-title" onclick="window.open('현무경(순천도).pdf', '_blank')">현무경 (순천도)</div>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">역도 (易道)</div>
+                <ul id="yeokdoList" class="book-list"></ul>
+
+                <div class="sidebar-section-title">성구 (原典)</div>
                 <ul id="bookList" class="book-list"></ul>
             </div>
         </aside>
@@ -488,9 +527,12 @@
                 <h2 id="currentTitle">데이터 로드 중...</h2>
             </header>
             <div id="contentArea" class="content-area">
-                <div class="welcome-message">
-                    데이터를 준비 중입니다. 잠시만 기다려주세요.<br>
+                <div id="welcomeScreen" class="welcome-message">
+                    <h2 style="color: var(--gold); margin-bottom: 20px;">Hyunmu 1.0</h2>
+                    가장 최신의 성구 검색 엔진과<br>
+                    역도(易道) 라이브러리를 경험해 보세요.
                 </div>
+                <div id="readerContent" style="display: none;"></div>
             </div>
             <button id="tocToggleBtn" class="floating-toggle-btn" title="목차 열기/닫기">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -503,17 +545,26 @@
         </main>
     </div>
     <script src="data.js" charset="utf-8"></script>
+    <script src="data_md.js" charset="utf-8"></script>
     <script>
         console.log("🚀 성구 데이터를 로컬 자바스크립트로 초기화합니다...");
         let BIBLE_DATA = {};
         let BIBLE_LIST = [];
+        let YEOKDO_DATA = {};
+        let YEOKDO_LIST = [];
         let isGlobalSearch = false;
 
         document.addEventListener("DOMContentLoaded", () => {
             if (typeof window.BIBLE_DATA_RAW !== 'undefined') {
                 BIBLE_DATA = window.BIBLE_DATA_RAW;
                 BIBLE_LIST = Object.keys(BIBLE_DATA).sort();
-                console.log(`✅ 데이터 로드 완료: ${BIBLE_LIST.length}권의 경전`);
+                if (typeof yeokdoData !== 'undefined') {
+                    YEOKDO_DATA = yeokdoData;
+                    YEOKDO_LIST = Object.keys(YEOKDO_DATA);
+                }
+                
+                console.log(`✅ 데이터 로드 완료: ${BIBLE_LIST.length}권의 경전 / ${YEOKDO_LIST.length}권의 역도 자료`);
+
                 initApp();
             } else {
                 console.error("데이터 초기화 실패: data.js 파일을 찾을 수 없습니다.");
@@ -545,6 +596,27 @@
 
         function initApp() {
             const bookListEl = document.getElementById('bookList');
+            const yeokdoListEl = document.getElementById('yeokdoList');
+
+            // 역도 리스트 초기화
+            YEOKDO_LIST.forEach(title => {
+                const li = document.createElement('li');
+                li.className = 'book-item';
+                li.dataset.book = title;
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'book-item-title';
+                titleDiv.innerHTML = `<span>${title}</span><span class="arrow-icon">▶</span>`;
+                titleDiv.onclick = () => loadYeokdo(title);
+                li.appendChild(titleDiv);
+
+                const tocDiv = document.createElement('div');
+                tocDiv.className = 'toc-container';
+                tocDiv.id = `toc-yeokdo-${title.replace(/\s+/g, '-')}`;
+                li.appendChild(tocDiv);
+
+                yeokdoListEl.appendChild(li);
+            });
 
             BIBLE_LIST.forEach(book => {
                 const li = document.createElement('li');
@@ -701,6 +773,10 @@
         function renderContent(text, title) {
             document.getElementById('currentTitle').innerHTML = `${title} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(로컬 데이터 모드)</span>`;
 
+            document.getElementById('welcomeScreen').style.display = 'none';
+            const readerContent = document.getElementById('readerContent');
+            readerContent.style.display = 'block';
+
             const lines = text.split('\n');
             let htmlContent = '';
 
@@ -726,7 +802,7 @@
                 }
             }
 
-            document.getElementById('contentArea').innerHTML = htmlContent;
+            readerContent.innerHTML = htmlContent;
             document.getElementById('contentArea').scrollTop = 0;
         }
 
@@ -807,6 +883,77 @@
                 }
                 contentArea.innerHTML = searchResultsHtml;
             }
+        }
+
+        function loadYeokdo(title) {
+            const prevActive = document.querySelector('.book-item.active');
+            const isSameBook = prevActive && prevActive.dataset.book === title;
+
+            if (isGlobalSearch) {
+                toggleGlobalSearch();
+            }
+
+            if (isSameBook) {
+                prevActive.classList.toggle('active');
+                return;
+            }
+
+            const text = YEOKDO_DATA[title];
+            if (!text) return;
+
+            window.currentBookText = text;
+            window.currentBookName = title;
+            isGlobalSearch = false;
+            document.getElementById('globalSearchBtn').classList.remove('active');
+
+            document.querySelectorAll('.book-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.querySelector(`.book-item[data-book="${title}"]`);
+            if (activeItem) activeItem.classList.add('active');
+
+            document.getElementById('currentTitle').innerText = title;
+            document.getElementById('welcomeScreen').style.display = 'none';
+            const readerContent = document.getElementById('readerContent');
+            readerContent.style.display = 'block';
+            
+            // Render MD
+            readerContent.innerHTML = formatMD(text);
+            
+            // Build TOC
+            const tocEl = document.getElementById(`toc-yeokdo-${title.replace(/\s+/g, '-')}`);
+            if (tocEl) {
+                document.querySelectorAll('.toc-container').forEach(el => el.innerHTML = '');
+                tocEl.innerHTML = buildTOC(text);
+            }
+
+            document.getElementById('contentArea').scrollTop = 0;
+            if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('show');
+        }
+
+        function formatMD(text) {
+            const lines = text.split('\n');
+            let html = '';
+            let chapterIndex = 0;
+            let verseIndex = 0;
+
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('### ')) {
+                    const title = trimmed.replace('###', '').trim();
+                    const id = `toc-3-${chapterIndex}-${verseIndex++}`;
+                    html += `<h3 id="${id}" class="verse-header">${title}</h3>\n`;
+                } else if (trimmed.startsWith('## ')) {
+                    const title = trimmed.replace('##', '').trim();
+                    verseIndex = 0;
+                    const id = `toc-2-${++chapterIndex}`;
+                    html += `<h2 id="${id}" class="chapter-header">${title}</h2>\n`;
+                } else if (trimmed.startsWith('# ')) {
+                    const title = trimmed.replace('#', '').trim();
+                    html += `<h1 class="book-title">${title}</h1>\n`;
+                } else {
+                    html += line + '\n';
+                }
+            }
+            return html;
         }
     </script>
 </body>
