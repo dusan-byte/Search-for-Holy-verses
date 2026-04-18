@@ -3,12 +3,20 @@
 
 <head>
     <meta charset="UTF-8">
+    <!-- 캐시 방지 (무조건 새로고침) -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>성구(原典) 검색 ver 1.0</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;600;700&display=swap"
-        rel="stylesheet">
+    <script>
+        // [무조건 반사] 모바일 강제 리다이렉트 (768px 미만 또는 Mobile UA)
+        if (window.innerWidth < 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+            if (!window.location.search.includes('mode=pc')) {
+                window.location.replace("mobile.html");
+            }
+        }
+    </script>
     <style>
         :root {
             --bg-dark: #0a0a0c;
@@ -21,7 +29,7 @@
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             --text-primary: #e8e8e8;
             --text-secondary: #9aa0a6;
-            --font-main: 'Noto Serif KR', serif;
+            --font-main: "Apple SD Gothic Neo", "Nanum Myeongjo", "Batang", "AppleMyungjo", serif;
         }
 
         body,
@@ -98,15 +106,37 @@
             letter-spacing: 2px;
         }
 
-        .sidebar-header .subtitle {
-            margin: 5px 0 0;
-            font-size: 13px;
-            color: var(--text-secondary);
+        .brand-name {
+            font-size: 20px;
+            color: var(--gold);
+            font-weight: 800;
             letter-spacing: 1px;
+            margin-top: 8px;
+            text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .sidebar-section-title {
+            padding: 20px 24px 8px;
+            font-size: 12px;
+            color: var(--gold-dim);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border-top: 1px solid var(--glass-border);
+            margin-top: 10px;
+        }
+
+        #readerContent {
+            white-space: pre-wrap;
+            line-height: 1.8;
+            font-family: 'Noto Serif KR', 'Malgun Gothic', serif;
+            color: #eee;
+            font-size: 1.15rem;
         }
 
         .search-container {
-            padding: 15px 24px;
+            padding: 20px 24px;
             border-bottom: 1px solid var(--glass-border);
             display: flex;
             flex-direction: column;
@@ -134,30 +164,16 @@
             box-shadow: 0 0 10px var(--gold-dim);
         }
 
-        /* 성구(原典) 검색 ver 1.0 테마 */
-        :root { 
-            --gold: #B8952E; 
-            --gold-hover: #ebd076;
-            --gold-dim: rgba(184, 149, 46, 0.15);
-            --bg-dark: #121212; 
-        }
-
-        .search-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
         #searchInput {
-            width: 100% !important;
-            box-sizing: border-box !important;
-            padding: 12px 40px 12px 15px; /* X 버튼 공간 확보 */
-            background: #1a1a1a;
-            border: 1px solid #333;
-            color: white;
-            border-radius: 8px;
+            width: 100%;
+            padding: 14px 16px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 14px;
             outline: none;
             transition: all 0.3s ease;
         }
@@ -165,89 +181,6 @@
         #searchInput:focus {
             border-color: var(--gold);
             box-shadow: 0 0 10px var(--gold-dim);
-        }
-
-        .clear-search-btn {
-            position: absolute;
-            right: 20px;
-            cursor: pointer;
-            color: #888;
-            display: none;
-            font-size: 18px;
-            z-index: 10;
-        }
-
-        .clear-search-btn:hover {
-            color: var(--gold);
-        }
-
-        /* [핵심] 황금빛 광채 하이라이트 */
-        .highlight-target {
-            background: rgba(255, 215, 0, 0.2);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
-            border-radius: 4px;
-            padding: 2px 5px;
-            font-weight: bold;
-            display: inline-block;
-            transition: all 0.5s ease;
-        }
-
-        /* [핵심] 📋 복사 아이콘 */
-        .copy-btn-inline {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 8px;
-            cursor: pointer;
-            color: var(--gold);
-            font-size: 0.8em;
-            padding: 2px 5px;
-            border: 1px solid rgba(184, 149, 46, 0.3);
-            border-radius: 4px;
-            background: rgba(184, 149, 46, 0.05);
-            transition: all 0.2s;
-        }
-
-        .copy-btn-inline:hover {
-            background: var(--gold);
-            color: #1a1a1a;
-        }
-
-        /* 복사 성공 토스트 알림 */
-        .copy-toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(184, 149, 46, 0.95);
-            color: #fff;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 14px;
-            z-index: 10000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            animation: fadeUp 1.5s ease-out forwards;
-        }
-
-        @keyframes fadeUp {
-            0% {
-                opacity: 0;
-                transform: translate(-50%, 10px);
-            }
-
-            20% {
-                opacity: 1;
-                transform: translate(-50%, 0);
-            }
-
-            80% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-                transform: translate(-50%, -10px);
-            }
         }
 
         .book-list-container {
@@ -552,6 +485,8 @@
 
             .verse-text {
                 font-size: 16px;
+                white-space: pre-wrap;
+                font-family: 'Noto Serif KR', serif;
             }
         }
     </style>
@@ -561,17 +496,29 @@
     <div class="app-container">
         <aside id="sidebar" class="glass-panel">
             <div class="sidebar-header">
-                <h1>성구(原典) 검색 ver 1.0</h1>
-                <p class="subtitle">항상 깨어 있으라</p>
+                <h1 style="margin: 0; padding: 10px 0; font-size: 20px; color: var(--gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); font-weight: 800;">
+                    성구(原典) 검색 Hyunmu 1.0
+                </h1>
             </div>
             <div class="search-container">
-                <button id="globalSearchBtn" class="global-search-btn" onclick="performAllSearch()">전체 경전 검색</button>
-                <div style="position: relative; width: 100%;">
-                    <input type="text" id="searchInput" placeholder="전체 경전 검색..." oninput="handleSearchInput()">
-                    <span id="clearSearchBtn" class="clear-search-btn" onclick="resetSearch()">×</span>
-                </div>
+                <button id="globalSearchBtn" class="global-search-btn">전체 경전 검색</button>
+                <input type="text" id="searchInput" placeholder="성구/초성 검색 (예: ㅈㅅ)">
             </div>
             <div class="book-list-container">
+                <div class="sidebar-section-title">현무경 (PDF)</div>
+                <ul class="book-list">
+                    <li class="book-item">
+                        <div class="book-item-title" onclick="window.open('현무경(법종교).pdf', '_blank')">현무경 (법종교)</div>
+                    </li>
+                    <li class="book-item">
+                        <div class="book-item-title" onclick="window.open('현무경(순천도).pdf', '_blank')">현무경 (순천도)</div>
+                    </li>
+                </ul>
+
+                <div class="sidebar-section-title">역도 (易道)</div>
+                <ul id="yeokdoList" class="book-list"></ul>
+
+                <div class="sidebar-section-title">성구 (原典)</div>
                 <ul id="bookList" class="book-list"></ul>
             </div>
         </aside>
@@ -580,9 +527,12 @@
                 <h2 id="currentTitle">데이터 로드 중...</h2>
             </header>
             <div id="contentArea" class="content-area">
-                <div class="welcome-message">
-                    데이터를 준비 중입니다. 잠시만 기다려주세요.<br>
+                <div id="welcomeScreen" class="welcome-message">
+                    <h2 style="color: var(--gold); margin-bottom: 20px;">Hyunmu 1.0</h2>
+                    가장 최신의 성구 검색 엔진과<br>
+                    역도(易道) 라이브러리를 경험해 보세요.
                 </div>
+                <div id="readerContent" style="display: none;"></div>
             </div>
             <button id="tocToggleBtn" class="floating-toggle-btn" title="목차 열기/닫기">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -608,13 +558,13 @@
             if (typeof window.BIBLE_DATA_RAW !== 'undefined') {
                 BIBLE_DATA = window.BIBLE_DATA_RAW;
                 BIBLE_LIST = Object.keys(BIBLE_DATA).sort();
-                
-                if (typeof window.yeokdoData !== 'undefined') {
-                    YEOKDO_DATA = window.yeokdoData;
+                if (typeof yeokdoData !== 'undefined') {
+                    YEOKDO_DATA = yeokdoData;
                     YEOKDO_LIST = Object.keys(YEOKDO_DATA);
                 }
                 
                 console.log(`✅ 데이터 로드 완료: ${BIBLE_LIST.length}권의 경전 / ${YEOKDO_LIST.length}권의 역도 자료`);
+
                 initApp();
             } else {
                 console.error("데이터 초기화 실패: data.js 파일을 찾을 수 없습니다.");
@@ -646,6 +596,27 @@
 
         function initApp() {
             const bookListEl = document.getElementById('bookList');
+            const yeokdoListEl = document.getElementById('yeokdoList');
+
+            // 역도 리스트 초기화
+            YEOKDO_LIST.forEach(title => {
+                const li = document.createElement('li');
+                li.className = 'book-item';
+                li.dataset.book = title;
+
+                const titleDiv = document.createElement('div');
+                titleDiv.className = 'book-item-title';
+                titleDiv.innerHTML = `<span>${title}</span><span class="arrow-icon">▶</span>`;
+                titleDiv.onclick = () => loadYeokdo(title);
+                li.appendChild(titleDiv);
+
+                const tocDiv = document.createElement('div');
+                tocDiv.className = 'toc-container';
+                tocDiv.id = `toc-yeokdo-${title.replace(/\s+/g, '-')}`;
+                li.appendChild(tocDiv);
+
+                yeokdoListEl.appendChild(li);
+            });
 
             BIBLE_LIST.forEach(book => {
                 const li = document.createElement('li');
@@ -730,18 +701,22 @@
 
             if (isGlobalSearch) {
                 btn.classList.add('active');
-                btn.textContent = '통합 검색 모드 (해제하려면 클릭)';
+                btn.textContent = '전체 검색 모드 (해제하려면 클릭)';
                 searchInput.placeholder = "전체 경전에서 검색...";
 
                 document.querySelectorAll('.book-item').forEach(el => el.classList.remove('active'));
 
-                document.getElementById('currentTitle').innerHTML = `통합 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(성구+역도 전체 대상)</span>`;
+                document.getElementById('currentTitle').innerHTML = `통합 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(전체 경전 대상)</span>`;
                 contentArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 전체 경전에서 결과를 찾아드립니다.</div>';
                 searchInput.focus();
+
+                if (searchInput.value) {
+                    handleSearch({ target: searchInput });
+                }
             } else {
                 btn.classList.remove('active');
                 btn.textContent = '전체 경전 검색';
-                searchInput.placeholder = "현재 경전 내 검색...";
+                searchInput.placeholder = "성구/초성 검색 (예: ㅈㅅ)";
 
                 const lastBook = window.currentBookName || BIBLE_LIST[0];
                 if (lastBook) loadScripture(lastBook);
@@ -798,6 +773,10 @@
         function renderContent(text, title) {
             document.getElementById('currentTitle').innerHTML = `${title} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(로컬 데이터 모드)</span>`;
 
+            document.getElementById('welcomeScreen').style.display = 'none';
+            const readerContent = document.getElementById('readerContent');
+            readerContent.style.display = 'block';
+
             const lines = text.split('\n');
             let htmlContent = '';
 
@@ -823,7 +802,7 @@
                 }
             }
 
-            document.getElementById('contentArea').innerHTML = htmlContent;
+            readerContent.innerHTML = htmlContent;
             document.getElementById('contentArea').scrollTop = 0;
         }
 
@@ -857,135 +836,124 @@
             return { html, count };
         }
 
-        // [UI] 검색창 제어
-        function handleSearchInput() {
-            const input = document.getElementById('searchInput');
-            const clearBtn = document.getElementById('clearSearchBtn');
-            const query = input.value.trim();
-            clearBtn.style.display = query ? 'block' : 'none';
-            
-            if (isGlobalSearch) return; // 전체 검색 모드일 때는 엔터나 버튼 클릭으로 유도 (성능 보호)
-            
+        function handleSearch(e) {
+            const query = e.target.value.toLowerCase().replace(/\s+/g, '');
+            const contentArea = document.getElementById('contentArea');
+
             if (!query) {
-                const activeBook = document.querySelector('.book-item.active');
-                if (activeBook && window.currentBookText) {
-                    renderContent(window.currentBookText, window.currentBookName);
+                if (isGlobalSearch) {
+                    contentArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 전체 경전에서 결과를 찾아드립니다.</div>';
+                } else {
+                    const activeBook = document.querySelector('.book-item.active');
+                    if (activeBook && window.currentBookText) {
+                        renderContent(window.currentBookText, window.currentBookName);
+                    }
                 }
                 return;
             }
-            
-            // 로컬 검색 (실시간)
-            if (window.currentBookText) {
-                const results = [];
-                const lines = window.currentBookText.split('\n');
-                lines.forEach(line => {
-                    if (line.includes(query)) results.push({ book: window.currentBookName, text: line.trim() });
-                });
-                displayResults(results, false);
-            }
-        }
 
-        function resetSearch() {
-            const input = document.getElementById('searchInput');
-            input.value = '';
-            handleSearchInput();
             if (isGlobalSearch) {
-                document.getElementById('contentArea').innerHTML = '<div class="welcome-message">검색어를 입력하시면 전체 경전에서 결과를 찾아드립니다.</div>';
+                let searchResultsHtml = '<div style="margin-bottom:20px;"></div>';
+                let totalMatches = 0;
+
+                for (let book of BIBLE_LIST) {
+                    const text = cleanMarkdown(BIBLE_DATA[book] || '');
+                    const matches = performSearchOnText(text, query, book);
+                    if (matches.count > 0) {
+                        searchResultsHtml += `<div class="search-result-book">${book} (${matches.count}건)</div>`;
+                        searchResultsHtml += matches.html;
+                        totalMatches += matches.count;
+                    }
+                }
+
+                if (totalMatches === 0) {
+                    searchResultsHtml = `<p class="verse-text" style="text-align:center; margin-top:50px;">'${e.target.value}'에 대한 결과가 전체 경전에 없습니다.</p>`;
+                } else {
+                    document.getElementById('currentTitle').innerHTML = `통합 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(총 ${totalMatches}건 검색됨)</span>`;
+                }
+                contentArea.innerHTML = searchResultsHtml;
+            } else {
+                if (!window.currentBookText) return;
+                let searchResultsHtml = '<h2 class="chapter-header">검색 결과</h2>';
+                const matches = performSearchOnText(window.currentBookText, query);
+                if (matches.count === 0) {
+                    searchResultsHtml += `<p class="verse-text" style="text-align:center;">'${e.target.value}'에 대한 결과가 없습니다.</p>`;
+                } else {
+                    searchResultsHtml += matches.html;
+                }
+                contentArea.innerHTML = searchResultsHtml;
             }
         }
 
-        // [최종] 전체 경전을 탐색하여 결과를 내놓는 함수
-        function performAllSearch() {
-            const query = document.getElementById('searchInput').value.trim();
-            if (!query) {
-                alert("검색어를 입력해 주세요.");
+        function loadYeokdo(title) {
+            const prevActive = document.querySelector('.book-item.active');
+            const isSameBook = prevActive && prevActive.dataset.book === title;
+
+            if (isGlobalSearch) {
+                toggleGlobalSearch();
+            }
+
+            if (isSameBook) {
+                prevActive.classList.toggle('active');
                 return;
             }
 
-            const results = [];
-            const sourceData = BIBLE_DATA || {};
-            const yeokdoData = YEOKDO_DATA || {};
+            const text = YEOKDO_DATA[title];
+            if (!text) return;
 
-            // 1. 성구 검색
-            for (let book in sourceData) {
-                const lines = sourceData[book].split('\n');
-                lines.forEach(line => { 
-                    if (line.includes(query)) results.push({ book: book, text: line.trim() }); 
-                });
+            window.currentBookText = text;
+            window.currentBookName = title;
+            isGlobalSearch = false;
+            document.getElementById('globalSearchBtn').classList.remove('active');
+
+            document.querySelectorAll('.book-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.querySelector(`.book-item[data-book="${title}"]`);
+            if (activeItem) activeItem.classList.add('active');
+
+            document.getElementById('currentTitle').innerText = title;
+            document.getElementById('welcomeScreen').style.display = 'none';
+            const readerContent = document.getElementById('readerContent');
+            readerContent.style.display = 'block';
+            
+            // Render MD
+            readerContent.innerHTML = formatMD(text);
+            
+            // Build TOC
+            const tocEl = document.getElementById(`toc-yeokdo-${title.replace(/\s+/g, '-')}`);
+            if (tocEl) {
+                document.querySelectorAll('.toc-container').forEach(el => el.innerHTML = '');
+                tocEl.innerHTML = buildTOC(text);
             }
-            // 2. 역경 검색
-            for (let book in yeokdoData) {
-                const lines = yeokdoData[book].split('\n');
-                lines.forEach(line => { 
-                    if (line.includes(query)) results.push({ book: book, text: line.trim() }); 
-                });
+
+            document.getElementById('contentArea').scrollTop = 0;
+            if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('show');
+        }
+
+        function formatMD(text) {
+            const lines = text.split('\n');
+            let html = '';
+            let chapterIndex = 0;
+            let verseIndex = 0;
+
+            for (let line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('### ')) {
+                    const title = trimmed.replace('###', '').trim();
+                    const id = `toc-3-${chapterIndex}-${verseIndex++}`;
+                    html += `<h3 id="${id}" class="verse-header">${title}</h3>\n`;
+                } else if (trimmed.startsWith('## ')) {
+                    const title = trimmed.replace('##', '').trim();
+                    verseIndex = 0;
+                    const id = `toc-2-${++chapterIndex}`;
+                    html += `<h2 id="${id}" class="chapter-header">${title}</h2>\n`;
+                } else if (trimmed.startsWith('# ')) {
+                    const title = trimmed.replace('#', '').trim();
+                    html += `<h1 class="book-title">${title}</h1>\n`;
+                } else {
+                    html += line + '\n';
+                }
             }
-
-            displayResults(results, true);
-        }
-
-        function displayResults(results, isAllSearch = false) {
-            const container = document.getElementById('contentArea');
-            container.innerHTML = results.length ? '' : '<div style="padding:40px; color:#666; text-align:center;">' + (isAllSearch ? '전체 경전에서 ' : '현재 경전에서 ') + '검색 결과가 없습니다.</div>';
-            
-            const titlePrefix = isAllSearch ? '통합 검색' : '현재 경전 검색';
-            document.getElementById('currentTitle').innerHTML = `${titlePrefix} 결과 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(총 ${results.length}건)</span>`;
-
-            results.forEach(res => {
-                const div = document.createElement('div');
-                div.style.padding = '15px 0';
-                div.style.borderBottom = '1px solid var(--glass-border)';
-                div.style.cursor = 'pointer';
-                div.style.transition = 'all 0.2s';
-                
-                div.onmouseover = () => div.style.backgroundColor = 'rgba(255,215,0,0.03)';
-                div.onmouseout = () => div.style.backgroundColor = 'transparent';
-                
-                div.onclick = () => showContext(res.book, res.text);
-                
-                div.innerHTML = `
-                    <div style="font-size:11px; color:var(--gold); margin-bottom:4px;">[${res.book}]</div>
-                    <div class="verse-text" style="font-size:14px; line-height:1.5; color: var(--text-primary); border-left: 2px solid var(--gold); padding-left:10px; margin:0;">${res.text}</div>
-                `;
-                container.appendChild(div);
-            });
-            container.scrollTop = 0;
-        }
-
-        // [부활] 📋 복사 아이콘 및 황금빛 하이라이트가 포함된 맥락 보기
-        function showContext(bookName, targetText) {
-            const fullText = BIBLE_DATA[bookName] || YEOKDO_DATA[bookName];
-            if (!fullText) return;
-            
-            const copyIconHtml = `<span class="copy-btn-inline" onclick="event.stopPropagation(); copyVerse('${targetText.replace(/'/g, "\\'")}')">📋 복사</span>`;
-            
-            const highlightedBody = fullText.replace(
-                targetText, 
-                `<span id="focus-verse" class="highlight-target">${targetText}${copyIconHtml}</span>`
-            );
-
-            document.getElementById('currentTitle').innerText = bookName;
-            document.getElementById('contentArea').innerHTML = `
-                <div style="white-space: pre-wrap; font-family: 'Noto Serif KR', serif; line-height:1.9; font-size:16px; padding:20px 0; color: var(--text-primary);">
-                    ${highlightedBody}
-                </div>
-            `;
-
-            setTimeout(() => {
-                const el = document.getElementById('focus-verse');
-                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }, 100);
-        }
-
-        // [이식] 원터치 복사 및 토스트 알림
-        function copyVerse(text) {
-            navigator.clipboard.writeText(text).then(() => {
-                const toast = document.createElement('div');
-                toast.className = 'copy-toast';
-                toast.innerText = '📜 구절이 클립보드에 복사되었습니다.';
-                document.body.appendChild(toast);
-                setTimeout(() => toast.remove(), 1500);
-            });
+            return html;
         }
     </script>
 </body>
