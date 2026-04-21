@@ -117,14 +117,16 @@
         }
 
         .sidebar-section-title {
-            padding: 20px 24px 8px;
-            font-size: 12px;
-            color: var(--gold-dim);
-            font-weight: 700;
+            padding: 24px 24px 1.5rem;
+            font-size: 13px;
+            color: #ffd700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 1.5px;
+            letter-spacing: 2px;
             border-top: 1px solid var(--glass-border);
             margin-top: 10px;
+            opacity: 1;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
         }
 
         #readerContent {
@@ -146,8 +148,8 @@
         .global-search-btn {
             width: 100%;
             padding: 12px;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--gold);
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
             color: var(--gold);
             border-radius: 12px;
             font-family: inherit;
@@ -155,21 +157,27 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            outline: none;
         }
 
         .global-search-btn.active,
         .global-search-btn:hover {
-            background: var(--gold);
-            color: var(--bg-dark);
-            box-shadow: 0 0 10px var(--gold-dim);
+            background: rgba(212, 175, 55, 0.15);
+            color: var(--gold);
+            box-shadow: 0 0 15px var(--gold-dim);
         }
 
-        #searchInput {
+        .search-input-wrapper {
+            position: relative;
             width: 100%;
-            padding: 14px 16px;
+        }
+
+        .search-input-wrapper input {
+            width: 100%;
+            padding: 14px 35px 14px 16px; 
             box-sizing: border-box;
-            background: rgba(0, 0, 0, 0.4);
-            border: 1px solid var(--glass-border);
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
             border-radius: 12px;
             color: var(--text-primary);
             font-family: inherit;
@@ -178,9 +186,65 @@
             transition: all 0.3s ease;
         }
 
-        #searchInput:focus {
-            border-color: var(--gold);
-            box-shadow: 0 0 10px var(--gold-dim);
+        .search-input-wrapper input:focus {
+            box-shadow: 0 0 12px var(--gold-dim);
+        }
+
+        #yeokdoSearchInput {
+            width: 100%;
+            padding: 12px 35px 12px 16px;
+            box-sizing: border-box;
+            background: rgba(0, 0, 0, 0.2);
+            border: none;
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        #yeokdoSearchInput:focus {
+            box-shadow: 0 0 12px var(--gold-dim);
+        }
+
+        .clear-btn {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+            display: none;
+            z-index: 10;
+        }
+
+        .clear-btn:hover {
+            color: var(--gold);
+        }
+
+        .search-history {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .history-badge {
+            background: rgba(212, 175, 55, 0.08);
+            border: none;
+            color: var(--gold);
+            padding: 5px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .history-badge:hover {
+            background: rgba(212, 175, 55, 0.2);
+            box-shadow: 0 0 8px var(--gold-dim);
         }
 
         .book-list-container {
@@ -190,7 +254,7 @@
         }
 
         ::-webkit-scrollbar {
-            width: 6px;
+            width: 4px;
         }
 
         ::-webkit-scrollbar-track {
@@ -198,12 +262,12 @@
         }
 
         ::-webkit-scrollbar-thumb {
-            background: var(--glass-border);
+            background: rgba(212, 175, 55, 0.3);
             border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(212, 175, 55, 0.4);
+            background: rgba(212, 175, 55, 0.6);
         }
 
         .book-list {
@@ -223,12 +287,13 @@
         }
 
         .book-item-title {
-            padding: 12px 24px;
+            padding: 15px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
             box-sizing: border-box;
+            letter-spacing: 0.5px;
         }
 
         .arrow-icon {
@@ -370,11 +435,17 @@
             border-left: 2px solid var(--glass-border);
         }
 
-        .highlight {
-            background-color: var(--gold-dim);
-            color: var(--gold-hover);
-            padding: 2px 4px;
-            border-radius: 4px;
+        .copy-icon {
+            display: inline-block;
+            margin-left: 10px;
+            cursor: pointer;
+            opacity: 0.2;
+            transition: opacity 0.2s;
+            font-size: 15px;
+        }
+
+        .verse-text:hover .copy-icon {
+            opacity: 1;
         }
 
         .floating-toggle-btn {
@@ -410,6 +481,44 @@
             font-weight: 700;
             border-bottom: 1px solid var(--gold-dim);
             padding-bottom: 8px;
+        }
+
+        .target-highlight {
+            background-color: rgba(212, 175, 55, 0.15) !important;
+            border-left: 4px solid var(--gold) !important;
+            padding: 10px 15px !important;
+            border-radius: 8px !important;
+            color: var(--text-primary) !important;
+            font-weight: 600 !important;
+            transition: all 0.5s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            margin: 15px 0 !important;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 255, 255, 0.05) !important;
+        }
+
+        #toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(212, 175, 55, 0.9);
+            color: var(--bg-dark);
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 15px;
+            font-weight: bold;
+            z-index: 1000;
+            display: none;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, 10px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
         }
 
         @media (max-width: 768px) {
@@ -502,20 +611,32 @@
             </div>
             <div class="search-container">
                 <button id="globalSearchBtn" class="global-search-btn">전체 경전 검색</button>
-                <input type="text" id="searchInput" placeholder="성구/초성 검색 (예: ㅈㅅ)">
+                <div class="search-input-wrapper" style="margin-top: 12px;">
+                    <input type="text" id="searchInput" placeholder="성구/초성 검색 (예: ㅈㅅ)">
+                    <span class="clear-btn" id="searchClearBtn">✕</span>
+                </div>
+                <div id="searchHistory" class="search-history"></div>
             </div>
             <div class="book-list-container">
-                <div class="sidebar-section-title">현무경 (PDF)</div>
+                <div class="sidebar-section-title" style="margin-top:0; border-top:none;">현무경 (PDF)</div>
                 <ul class="book-list">
                     <li class="book-item">
-                        <div class="book-item-title" onclick="window.open('현무경(법종교).pdf', '_blank')">현무경 (법종교)</div>
+                        <div class="book-item-title" onclick="window.open('현무경(법종교).pdf', '_blank')"><span>현무경 (법종교)</span><span class="arrow-icon">▶</span></div>
                     </li>
                     <li class="book-item">
-                        <div class="book-item-title" onclick="window.open('현무경(순천도).pdf', '_blank')">현무경 (순천도)</div>
+                        <div class="book-item-title" onclick="window.open('현무경(순천도).pdf', '_blank')"><span>현무경 (순천도)</span><span class="arrow-icon">▶</span></div>
                     </li>
                 </ul>
 
-                <div class="sidebar-section-title">역도 (易道)</div>
+                <div class="sidebar-section-title">
+                    <span>역경 (易經)</span>
+                </div>
+                <div style="padding: 0 24px 1.5rem;">
+                    <div class="search-input-wrapper">
+                        <input type="text" id="yeokdoSearchInput" placeholder="역경 전용 검색...">
+                        <span class="clear-btn" id="yeokdoClearBtn">✕</span>
+                    </div>
+                </div>
                 <ul id="yeokdoList" class="book-list"></ul>
 
                 <div class="sidebar-section-title">성구 (原典)</div>
@@ -530,8 +651,9 @@
                 <div id="welcomeScreen" class="welcome-message">
                     <h2 style="color: var(--gold); margin-bottom: 20px;">Hyunmu 1.0</h2>
                     가장 최신의 성구 검색 엔진과<br>
-                    역도(易道) 라이브러리를 경험해 보세요.
+                    역경(易經) 라이브러리를 경험해 보세요.
                 </div>
+                <div id="searchResultsArea" style="display: none;"></div>
                 <div id="readerContent" style="display: none;"></div>
             </div>
             <button id="tocToggleBtn" class="floating-toggle-btn" title="목차 열기/닫기">
@@ -544,6 +666,9 @@
             </button>
         </main>
     </div>
+    
+    <div id="toast"></div>
+
     <script src="data.js" charset="utf-8"></script>
     <script src="data_md.js" charset="utf-8"></script>
     <script>
@@ -554,6 +679,8 @@
         let YEOKDO_LIST = [];
         let isGlobalSearch = false;
 
+        const HISTORY_KEY = 'hyunmu_pc_search_history';
+
         document.addEventListener("DOMContentLoaded", () => {
             if (typeof window.BIBLE_DATA_RAW !== 'undefined') {
                 BIBLE_DATA = window.BIBLE_DATA_RAW;
@@ -563,7 +690,7 @@
                     YEOKDO_LIST = Object.keys(YEOKDO_DATA);
                 }
                 
-                console.log(`✅ 데이터 로드 완료: ${BIBLE_LIST.length}권의 경전 / ${YEOKDO_LIST.length}권의 역도 자료`);
+                console.log(`✅ 데이터 로드 완료: ${BIBLE_LIST.length}권의 경전 / ${YEOKDO_LIST.length}권의 역경 자료`);
 
                 initApp();
             } else {
@@ -594,11 +721,85 @@
             return text;
         }
 
+        function debounce(func, delay) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        function getSearchHistory() {
+            return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
+        }
+
+        function saveSearchHistory(query) {
+            if (!query) return;
+            let history = getSearchHistory();
+            history = [query, ...history.filter(q => q !== query)].slice(0, 5);
+            localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+            renderSearchHistory();
+        }
+
+        function renderSearchHistory() {
+            const history = getSearchHistory();
+            const container = document.getElementById('searchHistory');
+            container.innerHTML = history.map(q => `<span class="history-badge" onclick="useSearchHistory('${q}')">${q}</span>`).join('');
+        }
+
+        function useSearchHistory(query) {
+            const input = document.getElementById('searchInput');
+            input.value = query;
+            document.getElementById('searchClearBtn').style.display = 'block';
+            doBibleSearch(query, isGlobalSearch);
+        }
+
+        function getFormattedSource(elementId) {
+            const el = document.getElementById(elementId);
+            if (!el) return "";
+            
+            const bookName = window.currentBookName;
+            let chapter = "", verse = "";
+            
+            let prev = el.previousElementSibling;
+            while (prev) {
+                if (prev.tagName === "H3" && !verse) verse = prev.innerText.trim();
+                if (prev.tagName === "H2" && !chapter) chapter = prev.innerText.trim();
+                if (chapter && verse) break;
+                prev = prev.previousElementSibling;
+            }
+
+            let text = el.innerText.replace('📋', '').trim();
+            let location = [];
+            if (chapter) location.push(chapter);
+            if (verse) location.push(verse);
+            let locationStr = location.length > 0 ? " " + location.join(" ") : "";
+
+            return `${text}\n\n『${bookName}${locationStr}』`;
+        }
+
+        function copyToClipboard(elementId) {
+            const formattedText = getFormattedSource(elementId);
+            navigator.clipboard.writeText(formattedText).then(() => {
+                showToast("📜 출처를 포함한 구절이 복사되었습니다.");
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 1500);
+        }
+
         function initApp() {
             const bookListEl = document.getElementById('bookList');
             const yeokdoListEl = document.getElementById('yeokdoList');
 
-            // 역도 리스트 초기화
             YEOKDO_LIST.forEach(title => {
                 const li = document.createElement('li');
                 li.className = 'book-item';
@@ -639,7 +840,48 @@
                 bookListEl.appendChild(li);
             });
 
-            document.getElementById('searchInput').addEventListener('input', handleSearch);
+            const searchInput = document.getElementById('searchInput');
+            const searchClearBtn = document.getElementById('searchClearBtn');
+            const yeokdoSearchInput = document.getElementById('yeokdoSearchInput');
+            const yeokdoClearBtn = document.getElementById('yeokdoClearBtn');
+
+            const handleMainSearch = debounce((query) => {
+                doBibleSearch(query, isGlobalSearch);
+                if(query.length >= 2) saveSearchHistory(query);
+            }, 300);
+
+            searchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                yeokdoSearchInput.value = '';
+                yeokdoClearBtn.style.display = 'none';
+                searchClearBtn.style.display = query ? 'block' : 'none';
+                handleMainSearch(query);
+            });
+
+            searchClearBtn.addEventListener('click', () => {
+                searchInput.value = '';
+                searchClearBtn.style.display = 'none';
+                doBibleSearch('', isGlobalSearch);
+            });
+
+            const handleYeokdoSearch = debounce((query) => {
+                doYeokdoSearch(query);
+            }, 300);
+
+            yeokdoSearchInput.addEventListener('input', (e) => {
+                const query = e.target.value.trim();
+                searchInput.value = '';
+                searchClearBtn.style.display = 'none';
+                yeokdoClearBtn.style.display = query ? 'block' : 'none';
+                handleYeokdoSearch(query);
+            });
+
+            yeokdoClearBtn.addEventListener('click', () => {
+                yeokdoSearchInput.value = '';
+                yeokdoClearBtn.style.display = 'none';
+                doYeokdoSearch('');
+            });
+
             document.getElementById('globalSearchBtn').addEventListener('click', toggleGlobalSearch);
             document.getElementById('tocToggleBtn').addEventListener('click', () => {
                 const sidebar = document.getElementById('sidebar');
@@ -650,10 +892,31 @@
                 }
             });
 
-            if (BIBLE_LIST.length > 0) {
-                const defaultBook = BIBLE_LIST.find(b => b.includes('전지언')) || BIBLE_LIST[0];
-                loadScripture(defaultBook);
+            renderSearchHistory();
+
+            // Load last read state
+            const lastBook = localStorage.getItem('hyunmu_last_read_book');
+            const lastScroll = parseInt(localStorage.getItem('hyunmu_last_read_scroll') || '0');
+            
+            if (lastBook && YEOKDO_LIST.includes(lastBook)) {
+                loadYeokdo(lastBook);
+            } else if (lastBook && BIBLE_LIST.includes(lastBook)) {
+                loadScripture(lastBook);
+            } else if (BIBLE_LIST.length > 0) {
+                loadScripture(BIBLE_LIST[0]);
             }
+
+            setTimeout(() => {
+                document.getElementById('contentArea').scrollTop = lastScroll;
+            }, 200);
+
+            // Save scroll state
+            document.getElementById('contentArea').addEventListener('scroll', debounce((e) => {
+                const searchArea = document.getElementById('searchResultsArea');
+                if (window.currentBookName && (!searchArea.style.display || searchArea.style.display === 'none')) {
+                    localStorage.setItem('hyunmu_last_read_scroll', e.target.scrollTop);
+                }
+            }, 500));
         }
 
         function buildTOC(text) {
@@ -697,7 +960,7 @@
             isGlobalSearch = !isGlobalSearch;
             const btn = document.getElementById('globalSearchBtn');
             const searchInput = document.getElementById('searchInput');
-            const contentArea = document.getElementById('contentArea');
+            const searchArea = document.getElementById('searchResultsArea');
 
             if (isGlobalSearch) {
                 btn.classList.add('active');
@@ -707,42 +970,246 @@
                 document.querySelectorAll('.book-item').forEach(el => el.classList.remove('active'));
 
                 document.getElementById('currentTitle').innerHTML = `통합 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(전체 경전 대상)</span>`;
-                contentArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 전체 경전에서 결과를 찾아드립니다.</div>';
-                searchInput.focus();
-
-                if (searchInput.value) {
-                    handleSearch({ target: searchInput });
+                
+                if (searchInput.value.trim()) {
+                    doBibleSearch(searchInput.value.trim(), true);
+                } else {
+                    document.getElementById('welcomeScreen').style.display = 'none';
+                    document.getElementById('readerContent').style.display = 'none';
+                    searchArea.style.display = 'block';
+                    searchArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 전체 경전에서 결과를 찾아드립니다.</div>';
                 }
+                searchInput.focus();
             } else {
                 btn.classList.remove('active');
                 btn.textContent = '전체 경전 검색';
                 searchInput.placeholder = "성구/초성 검색 (예: ㅈㅅ)";
 
                 const lastBook = window.currentBookName || BIBLE_LIST[0];
-                if (lastBook) loadScripture(lastBook);
+                if (searchInput.value.trim()) {
+                    doBibleSearch(searchInput.value.trim(), false);
+                } else {
+                    if (lastBook) loadScripture(lastBook);
+                }
             }
         }
 
-        function loadScripture(bookName) {
+        function doBibleSearch(queryStr, isGlobal) {
+            const query = queryStr.toLowerCase().replace(/\s+/g, '');
+            const searchArea = document.getElementById('searchResultsArea');
+            
+            if (!query) {
+                if (isGlobal) {
+                    document.getElementById('welcomeScreen').style.display = 'none';
+                    document.getElementById('readerContent').style.display = 'none';
+                    searchArea.style.display = 'block';
+                    searchArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 전체 경전에서 결과를 찾아드립니다.</div>';
+                } else {
+                    const activeBook = document.querySelector('.book-item.active');
+                    if (activeBook && window.currentBookText) {
+                        renderContent(window.currentBookText, window.currentBookName);
+                    }
+                }
+                return;
+            }
+
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('readerContent').style.display = 'none';
+            searchArea.style.display = 'block';
+
+            let resultsHtml = '';
+            let totalMatches = 0;
+            
+            const targetBooks = isGlobal ? BIBLE_LIST : (window.currentBookName ? [window.currentBookName] : BIBLE_LIST);
+
+            targetBooks.forEach(bookName => {
+                const rawContent = BIBLE_DATA[bookName];
+                if(!rawContent) return;
+                const cleanContent = cleanMarkdown(rawContent);
+                const lines = cleanContent.split('\n');
+                
+                let currentChapter = "";
+                let currentVerse = "";
+                let matchesInBook = 0;
+                let bookHtml = '';
+                const isAnwonjeon = bookName.includes('안원전');
+                const seenKeys = new Set();
+
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    if (isAnwonjeon && line.includes("天地開闢經 第一篇 辛丑年")) {
+                        line = line.replace("天地開闢經 第一篇 辛丑年", "천지개벽경 제1편 신축년");
+                        currentChapter = "천지개벽경 제1편 신축년";
+                    } else if (line.startsWith('## ')) {
+                        currentChapter = line.replace('##', '').trim();
+                    } else if (line.startsWith('### ')) {
+                        currentVerse = line.replace('###', '').trim();
+                    }
+                    
+                    const searchLine = line.toLowerCase().replace(/\s+/g, '');
+                    if (searchLine.includes(query) || getChoseong(searchLine).includes(query)) {
+                        let key = isAnwonjeon ? `${bookName}-${currentChapter}` : `${bookName}-${currentChapter}-${currentVerse}`;
+                        
+                        if (!seenKeys.has(key)) {
+                            const displayChapter = currentChapter;
+                            const displayVerse = isAnwonjeon ? "" : currentVerse;
+                            const bookPrefix = isGlobal ? `<span style="color:#9aa0a6;">${bookName} &gt; </span>` : '';
+                            let displayLine = line;
+                            if (displayLine.startsWith('#')) displayLine = displayLine.replace(/^#+\s+/, '');
+                            
+                            bookHtml += `
+                                <div class="search-result-item" onclick="jumpToBible('${bookName}', ${i})" style="cursor:pointer; margin-bottom:15px; padding:10px; border-radius:8px; transition:background 0.2s;">
+                                    <h3 class="verse-header" style="margin-top:0;">${bookPrefix}${displayChapter} ${displayVerse ? '&gt; ' + displayVerse : ''}</h3>
+                                    <p class="verse-text match" style="border-left: 3px solid var(--gold); margin-bottom:0;">${displayLine}</p>
+                                </div>
+                            `;
+                            matchesInBook++;
+                            totalMatches++;
+                            seenKeys.add(key);
+                        }
+                    }
+                }
+                
+                if (matchesInBook > 0) {
+                    if (isGlobal) {
+                        resultsHtml += `<div class="search-result-book">${bookName} (${matchesInBook}건)</div>`;
+                    } else {
+                        resultsHtml += `<h2 class="chapter-header">검색 결과 (${matchesInBook}건)</h2>`;
+                    }
+                    resultsHtml += bookHtml;
+                }
+            });
+
+            if (totalMatches === 0) {
+                resultsHtml = `<p class="verse-text" style="text-align:center; margin-top:50px;">'${queryStr}'에 대한 성구 결과가 없습니다.</p>`;
+            } else {
+                const titleText = isGlobal ? '통합 검색' : `${window.currentBookName} 검색`;
+                document.getElementById('currentTitle').innerHTML = `${titleText} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(총 ${totalMatches}건 검색됨)</span>`;
+            }
+            
+            searchArea.innerHTML = resultsHtml;
+            document.getElementById('contentArea').scrollTop = 0;
+        }
+
+        function doYeokdoSearch(queryStr) {
+            const query = queryStr.toLowerCase().replace(/\s+/g, '');
+            const searchArea = document.getElementById('searchResultsArea');
+            
+            if (!query) {
+                const activeBook = document.querySelector('.book-item.active');
+                if (activeBook && window.currentBookText) {
+                    if (YEOKDO_LIST.includes(window.currentBookName)) {
+                        loadYeokdo(window.currentBookName);
+                    }
+                } else {
+                    document.getElementById('welcomeScreen').style.display = 'none';
+                    document.getElementById('readerContent').style.display = 'none';
+                    searchArea.style.display = 'block';
+                    searchArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 역경(易經) 문서에서 결과를 찾아드립니다.</div>';
+                }
+                return;
+            }
+
+            if (isGlobalSearch) {
+                isGlobalSearch = false;
+                const btn = document.getElementById('globalSearchBtn');
+                btn.classList.remove('active');
+                btn.textContent = '전체 경전 검색';
+                document.getElementById('searchInput').placeholder = "성구/초성 검색 (예: ㅈㅅ)";
+            }
+
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('readerContent').style.display = 'none';
+            searchArea.style.display = 'block';
+
+            let resultsHtml = '';
+            let totalMatches = 0;
+
+            YEOKDO_LIST.forEach(bookName => {
+                const rawContent = YEOKDO_DATA[bookName];
+                if(!rawContent) return;
+                const lines = rawContent.split('\n');
+                
+                let currentChapter = "";
+                let currentVerse = "";
+                let matchesInBook = 0;
+                let bookHtml = '';
+                const seenKeys = new Set();
+
+                for (let i = 0; i < lines.length; i++) {
+                    let line = lines[i].trim();
+                    if (!line) continue;
+                    
+                    if (line.startsWith('## ')) currentChapter = line.replace('##', '').trim();
+                    else if (line.startsWith('### ')) currentVerse = line.replace('###', '').trim();
+                    
+                    const searchLine = line.toLowerCase().replace(/\s+/g, '');
+                    if (searchLine.includes(query) || getChoseong(searchLine).includes(query)) {
+                        let key = `${bookName}-${currentChapter}-${currentVerse}`;
+                        
+                        if (!seenKeys.has(key)) {
+                            const displayChapter = currentChapter;
+                            const displayVerse = currentVerse;
+                            let displayLine = line;
+                            if (displayLine.startsWith('#')) displayLine = displayLine.replace(/^#+\s+/, '');
+                            
+                            bookHtml += `
+                                <div class="search-result-item" onclick="jumpToYeokdo('${bookName}', ${i})" style="cursor:pointer; margin-bottom:15px; padding:10px; border-radius:8px; transition:background 0.2s;">
+                                    <h3 class="verse-header" style="margin-top:0;"><span style="color:#9aa0a6;">${bookName} &gt; </span>${displayChapter} ${displayVerse ? '&gt; ' + displayVerse : ''}</h3>
+                                    <p class="verse-text match" style="border-left: 3px solid var(--gold); margin-bottom:0;">${displayLine}</p>
+                                </div>
+                            `;
+                            matchesInBook++;
+                            totalMatches++;
+                            seenKeys.add(key);
+                        }
+                    }
+                }
+                
+                if (matchesInBook > 0) {
+                    resultsHtml += `<div class="search-result-book">${bookName} (${matchesInBook}건)</div>`;
+                    resultsHtml += bookHtml;
+                }
+            });
+
+            if (totalMatches === 0) {
+                resultsHtml = `<p class="verse-text" style="text-align:center; margin-top:50px;">'${queryStr}'에 대한 역경 검색 결과가 없습니다.</p>`;
+            } else {
+                document.getElementById('currentTitle').innerHTML = `역경(易經) 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(총 ${totalMatches}건 검색됨)</span>`;
+            }
+            
+            searchArea.innerHTML = resultsHtml;
+            document.getElementById('contentArea').scrollTop = 0;
+        }
+
+        function jumpToBible(bookName, lineIndex) {
+            loadScripture(bookName, lineIndex);
+        }
+
+        function jumpToYeokdo(title, lineIndex) {
+            loadYeokdo(title, lineIndex);
+        }
+
+        function loadScripture(bookName, targetLineIndex = -1) {
             const prevActive = document.querySelector('.book-item.active');
             const isSameBook = prevActive && prevActive.dataset.book === bookName;
 
-            if (isGlobalSearch) {
+            if (isGlobalSearch && targetLineIndex === -1) {
                 toggleGlobalSearch();
             }
 
-            if (isSameBook) {
-                // 이미 열려있는 도서를 클릭한 경우 닫기 (토글)
+            if (isSameBook && targetLineIndex === -1) {
                 prevActive.classList.toggle('active');
                 return;
             }
 
-            // 새로운 도서를 클릭하거나 닫혀있던 도서를 열 때
             const text = BIBLE_DATA[bookName];
             if (!text) return;
 
             const cleanedText = cleanMarkdown(text);
-            renderContent(cleanedText, bookName);
+            renderContent(cleanedText, bookName, targetLineIndex);
 
             document.querySelectorAll('.book-item').forEach(el => {
                 el.classList.remove('active');
@@ -753,6 +1220,7 @@
 
             window.currentBookText = cleanedText;
             window.currentBookName = bookName;
+            localStorage.setItem('hyunmu_last_read_book', bookName);
 
             const tocContainerId = `toc-${bookName.replace(/\s+/g, '-')}`;
             const tocContainer = document.getElementById(tocContainerId);
@@ -761,19 +1229,20 @@
             }
 
             const activeEl = document.querySelector('.book-item.active');
-            if (activeEl) {
+            if (activeEl && targetLineIndex === -1) {
                 activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
 
-            if (window.innerWidth <= 768 && !isSameBook) {
+            if (window.innerWidth <= 768 && (!isSameBook || targetLineIndex !== -1)) {
                 document.getElementById('sidebar').classList.remove('show');
             }
         }
 
-        function renderContent(text, title) {
+        function renderContent(text, title, targetLineIndex = -1) {
             document.getElementById('currentTitle').innerHTML = `${title} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(로컬 데이터 모드)</span>`;
 
             document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('searchResultsArea').style.display = 'none';
             const readerContent = document.getElementById('readerContent');
             readerContent.style.display = 'block';
 
@@ -783,109 +1252,47 @@
             let chapterIndex = 0;
             let verseIndex = 0;
 
-            for (let line of lines) {
-                line = line.trim();
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i].trim();
                 if (!line) continue;
+
+                let lineId = `bible-line-${i}`;
+                let isTarget = (i === targetLineIndex);
+                let targetClass = isTarget ? ' target-highlight' : '';
+                let displayLine = line;
 
                 if (line.startsWith('### ')) {
                     const cleanTitle = line.replace('###', '').trim();
                     const id = `toc-3-${chapterIndex}-${verseIndex++}`;
-                    htmlContent += `<h3 id="${id}" class="verse-header">${cleanTitle}</h3>`;
+                    htmlContent += `<h3 id="${id}" class="verse-header${targetClass}" data-line="${lineId}">${cleanTitle}</h3>`;
                 } else if (line.startsWith('## ')) {
                     const cleanTitle = line.replace('##', '').trim();
                     verseIndex = 0;
                     const id = `toc-2-${++chapterIndex}`;
-                    htmlContent += `<h2 id="${id}" class="chapter-header">${cleanTitle}</h2>`;
+                    htmlContent += `<h2 id="${id}" class="chapter-header${targetClass}" data-line="${lineId}">${cleanTitle}</h2>`;
                 } else if (line.startsWith('# ')) {
                 } else {
-                    htmlContent += `<p class="verse-text">${line}</p>`;
+                    htmlContent += `<p id="${lineId}" class="verse-text${targetClass}">${displayLine} <span class="copy-icon" onclick="copyToClipboard('${lineId}')" title="출처와 함께 복사">📋</span></p>`;
                 }
             }
 
             readerContent.innerHTML = htmlContent;
-            document.getElementById('contentArea').scrollTop = 0;
-        }
 
-        function performSearchOnText(text, query, bookName = '') {
-            const lines = text.split('\n');
-            let html = '';
-            let count = 0;
-            let currentChapter = '';
-            let currentVerse = '';
-
-            for (let line of lines) {
-                line = line.trim();
-                if (!line) continue;
-
-                if (line.startsWith('## ')) currentChapter = line.replace('##', '').trim();
-                else if (line.startsWith('### ')) currentVerse = line.replace('###', '').trim();
-                else if (!line.startsWith('#')) {
-                    const rawLineForSearch = line.replace(/\s+/g, '').toLowerCase();
-                    const choseongLine = getChoseong(rawLineForSearch);
-
-                    if (rawLineForSearch.includes(query) || choseongLine.includes(query)) {
-                        const bookPrefix = bookName ? `<span style="color:#9aa0a6;">${bookName} &gt; </span>` : '';
-                        html += `
-                            <h3 class="verse-header">${bookPrefix}${currentChapter} &gt; ${currentVerse}</h3>
-                            <p class="verse-text match" style="border-left: 3px solid var(--gold);">${line}</p>
-                        `;
-                        count++;
-                    }
-                }
-            }
-            return { html, count };
-        }
-
-        function handleSearch(e) {
-            const query = e.target.value.toLowerCase().replace(/\s+/g, '');
-            const contentArea = document.getElementById('contentArea');
-
-            if (!query) {
-                if (isGlobalSearch) {
-                    contentArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 전체 경전에서 결과를 찾아드립니다.</div>';
-                } else {
-                    const activeBook = document.querySelector('.book-item.active');
-                    if (activeBook && window.currentBookText) {
-                        renderContent(window.currentBookText, window.currentBookName);
-                    }
-                }
-                return;
-            }
-
-            if (isGlobalSearch) {
-                let searchResultsHtml = '<div style="margin-bottom:20px;"></div>';
-                let totalMatches = 0;
-
-                for (let book of BIBLE_LIST) {
-                    const text = cleanMarkdown(BIBLE_DATA[book] || '');
-                    const matches = performSearchOnText(text, query, book);
-                    if (matches.count > 0) {
-                        searchResultsHtml += `<div class="search-result-book">${book} (${matches.count}건)</div>`;
-                        searchResultsHtml += matches.html;
-                        totalMatches += matches.count;
-                    }
-                }
-
-                if (totalMatches === 0) {
-                    searchResultsHtml = `<p class="verse-text" style="text-align:center; margin-top:50px;">'${e.target.value}'에 대한 결과가 전체 경전에 없습니다.</p>`;
-                } else {
-                    document.getElementById('currentTitle').innerHTML = `통합 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(총 ${totalMatches}건 검색됨)</span>`;
-                }
-                contentArea.innerHTML = searchResultsHtml;
+            if (targetLineIndex !== -1) {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        const targetEl = document.getElementById(`bible-line-${targetLineIndex}`) || document.querySelector(`[data-line="bible-line-${targetLineIndex}"]`);
+                        if (targetEl) {
+                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    });
+                });
             } else {
-                if (!window.currentBookText) return;
-                let searchResultsHtml = '<h2 class="chapter-header">검색 결과</h2>';
-                const matches = performSearchOnText(window.currentBookText, query);
-                if (matches.count === 0) {
-                    searchResultsHtml += `<p class="verse-text" style="text-align:center;">'${e.target.value}'에 대한 결과가 없습니다.</p>`;
-                } else {
-                    searchResultsHtml += matches.html;
-                }
-                contentArea.innerHTML = searchResultsHtml;
+                document.getElementById('contentArea').scrollTop = 0;
             }
         }
 
-        function loadYeokdo(title) {
+        function loadYeokdo(title, targetLineIndex = -1) {
             const prevActive = document.querySelector('.book-item.active');
             const isSameBook = prevActive && prevActive.dataset.book === title;
 
@@ -893,7 +1300,7 @@
                 toggleGlobalSearch();
             }
 
-            if (isSameBook) {
+            if (isSameBook && targetLineIndex === -1) {
                 prevActive.classList.toggle('active');
                 return;
             }
@@ -903,6 +1310,8 @@
 
             window.currentBookText = text;
             window.currentBookName = title;
+            localStorage.setItem('hyunmu_last_read_book', title);
+            
             isGlobalSearch = false;
             document.getElementById('globalSearchBtn').classList.remove('active');
 
@@ -912,45 +1321,64 @@
 
             document.getElementById('currentTitle').innerText = title;
             document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('searchResultsArea').style.display = 'none';
             const readerContent = document.getElementById('readerContent');
             readerContent.style.display = 'block';
             
-            // Render MD
-            readerContent.innerHTML = formatMD(text);
+            readerContent.innerHTML = formatMD(text, targetLineIndex);
             
-            // Build TOC
             const tocEl = document.getElementById(`toc-yeokdo-${title.replace(/\s+/g, '-')}`);
             if (tocEl) {
                 document.querySelectorAll('.toc-container').forEach(el => el.innerHTML = '');
                 tocEl.innerHTML = buildTOC(text);
             }
 
-            document.getElementById('contentArea').scrollTop = 0;
-            if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('show');
+            if (targetLineIndex !== -1) {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        const targetEl = document.getElementById(`yeokdo-line-${targetLineIndex}`) || document.querySelector(`[data-line="yeokdo-line-${targetLineIndex}"]`);
+                        if (targetEl) {
+                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    });
+                });
+            } else {
+                document.getElementById('contentArea').scrollTop = 0;
+            }
+
+            if (window.innerWidth <= 768 && (!isSameBook || targetLineIndex !== -1)) document.getElementById('sidebar').classList.remove('show');
         }
 
-        function formatMD(text) {
+        function formatMD(text, targetLineIndex = -1) {
             const lines = text.split('\n');
             let html = '';
             let chapterIndex = 0;
             let verseIndex = 0;
 
-            for (let line of lines) {
-                const trimmed = line.trim();
+            for (let i = 0; i < lines.length; i++) {
+                const trimmed = lines[i].trim();
+                let isTarget = (i === targetLineIndex);
+                let targetClass = isTarget ? ' target-highlight' : '';
+                let lineId = `yeokdo-line-${i}`;
+
                 if (trimmed.startsWith('### ')) {
                     const title = trimmed.replace('###', '').trim();
                     const id = `toc-3-${chapterIndex}-${verseIndex++}`;
-                    html += `<h3 id="${id}" class="verse-header">${title}</h3>\n`;
+                    html += `<h3 id="${id}" class="verse-header${targetClass}" data-line="${lineId}">${title}</h3>\n`;
                 } else if (trimmed.startsWith('## ')) {
                     const title = trimmed.replace('##', '').trim();
                     verseIndex = 0;
                     const id = `toc-2-${++chapterIndex}`;
-                    html += `<h2 id="${id}" class="chapter-header">${title}</h2>\n`;
+                    html += `<h2 id="${id}" class="chapter-header${targetClass}" data-line="${lineId}">${title}</h2>\n`;
                 } else if (trimmed.startsWith('# ')) {
                     const title = trimmed.replace('#', '').trim();
-                    html += `<h1 class="book-title">${title}</h1>\n`;
+                    html += `<h1 class="book-title${targetClass}" data-line="${lineId}">${title}</h1>\n`;
                 } else {
-                    html += line + '\n';
+                    if (trimmed) {
+                        html += `<p id="${lineId}" class="verse-text${targetClass}">${lines[i]} <span class="copy-icon" onclick="copyToClipboard('${lineId}')" title="출처와 함께 복사">📋</span></p>\n`;
+                    } else {
+                        html += `\n`;
+                    }
                 }
             }
             return html;
