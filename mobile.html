@@ -267,16 +267,6 @@
             border-radius: 30px; font-size: 14px; z-index: 1000;
             display: none; animation: fadeIn 0.3s;
         }
-
-        .highlight-target {
-            color: #000 !important; font-weight: 800; 
-            background: rgba(212, 175, 55, 0.3) !important; 
-            padding: 12px; border-radius: 8px; 
-            border-left: 6px solid var(--gold-premium); 
-            box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
-            transform: scale(1.02);
-            transition: all 0.4s ease-out;
-        }
     </style>
 </head>
 <body>
@@ -825,7 +815,7 @@
             }
         }
 
-        async function openReader(bookName, targetChapter, targetVerse, isAggregated, highlightQuery, targetLineText) {
+        function openReader(bookName, targetChapter, targetVerse, isAggregated, highlightQuery, targetLineText) {
             const layer = document.getElementById('readerLayer');
             const content = document.getElementById('readerContent');
             const title = document.getElementById('readerTitle');
@@ -839,21 +829,6 @@
             let currentChapter = "";
             let currentVerse = "";
             let firstMatchIdInReader = "";
-
-            if (bookName === '동곡비서') {
-                let foundChapter = "";
-                for (let i = 0; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    const match = line.match(/^<(\d+)>/);
-                    if (match) {
-                        foundChapter = match[0];
-                    }
-                    if (line === targetLineText) {
-                        targetChapter = foundChapter;
-                        break;
-                    }
-                }
-            }
 
             // 현재 컨텍스트 업데이트 (복사 및 즐겨찾기용)
             CURRENT_CONTEXT = {
@@ -869,12 +844,7 @@
                 let processedLine = line.trim();
                 if (!processedLine) return;
                 
-                if (bookName === '동곡비서') {
-                    const match = processedLine.match(/^<(\d+)>/);
-                    if (match) {
-                        currentChapter = match[0];
-                    }
-                } else if (bookName.includes('안원전') && processedLine.includes("天地開闢經 第一篇 辛丑年")) {
+                if (bookName.includes('안원전') && processedLine.includes("天地開闢經 第一篇 辛丑年")) {
                     processedLine = processedLine.replace("天地開闢經 第一篇 辛丑年", "천지개벽경 제1편 신축년");
                     currentChapter = "천지개벽경 제1편 신축년";
                     currentVerse = "";
@@ -909,28 +879,14 @@
             layer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
-            if (bookName === '동곡비서') {
-                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-                setTimeout(() => {
-                    const targetEl = document.getElementById(firstMatchIdInReader);
-                    if (targetEl) {
-                        document.querySelectorAll('.highlight-target').forEach(el => el.classList.remove('highlight-target'));
-                        targetEl.classList.add('highlight-target');
-                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    } else {
-                        content.scrollTop = 0;
-                    }
-                }, 500);
-            } else {
-                setTimeout(() => {
-                    const targetEl = document.getElementById(firstMatchIdInReader);
-                    if (targetEl) {
-                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    } else {
-                        content.scrollTop = 0;
-                    }
-                }, 300);
-            }
+            setTimeout(() => {
+                const targetEl = document.getElementById(firstMatchIdInReader);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    content.scrollTop = 0;
+                }
+            }, 300);
         }
 
         function copyCurrentContent() {
