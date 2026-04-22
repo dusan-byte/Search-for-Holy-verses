@@ -305,7 +305,14 @@
                         <div style="font-size: 13px; color: #888; font-weight: 600; margin-bottom: 4px;">현무경 (PDF)</div>
                         <div class="yido-item" onclick="openPDF('현무경(법종교).pdf')">📄 현무경 (법종교)</div>
                         <div class="yido-item" onclick="openPDF('현무경(순천도).pdf')">📄 현무경 (순천도)</div>
-                        <div style="font-size: 13px; color: #888; font-weight: 600; margin: 12px 0 4px;">역경 (易經)</div>
+                        <div style="font-size: 13px; color: #888; font-weight: 600; margin: 12px 0 4px;">역경 (易經) 라이브러리</div>
+                        <!-- [맞춤형 내부 이식] 베이지 톤의 검색바 -->
+                        <div class="yido-search-unit" style="margin-bottom: 12px; position: relative; box-sizing: border-box;">
+                            <input type="text" id="yidoSearchInput" placeholder="🔍 라이브러리 내 검색..." 
+                                style="width: 100%; padding: 10px 35px 10px 12px; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 10px; 
+                                font-size: 14px; outline: none; box-sizing: border-box; background: #F5F1E9; color: #444; font-family: inherit;">
+                            <span id="yidoSearchClear" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--gold-premium); cursor: pointer; display: none; font-size: 18px;">&times;</span>
+                        </div>
                         <div id="yidoDynamicList"></div>
                     </div>
                 </div>
@@ -416,6 +423,26 @@
             document.getElementById('btnCopy').addEventListener('click', () => {
                 copyCurrentContent();
             });
+
+            // [역경 전용 검색] 이벤트 리스너
+            const yidoInput = document.getElementById('yidoSearchInput');
+            if (yidoInput) {
+                yidoInput.addEventListener('input', (e) => {
+                    searchYeokdo(e.target.value.trim());
+                });
+                yidoInput.addEventListener('focus', () => {
+                    const menu = document.getElementById('yidoMenu');
+                    if (!menu.classList.contains('open')) toggleYidoMenu();
+                });
+            }
+            const yidoClear = document.getElementById('yidoSearchClear');
+            if (yidoClear) {
+                yidoClear.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    yidoInput.value = '';
+                    searchYeokdo('');
+                });
+            }
         });
 
         // --- Yido (易道) & PDF ---
@@ -490,6 +517,69 @@
             });
         }
 
+        // [역경 전용 검색 엔진 이식]
+        function searchYeokdo(query) {
+            const container = document.getElementById('yidoDynamicList');
+            const clearBtn = document.getElementById('yidoSearchClear');
+            if (clearBtn) clearBtn.style.display = query ? 'block' : 'none';
+
+            if (!query) {
+                initYidoList();
+                return;
+            }
+
+            const q = query.toLowerCase().replace(/\s+/g, '');
+            container.innerHTML = '';
+
+            YEOKDO_LIST.forEach(title => {
+                const text = YEOKDO_DATA[title];
+                const lines = text.split('\n');
+                let matches = [];
+                let cIdx = 0, vIdx = 0;
+
+                lines.forEach(line => {
+                    const t = line.trim();
+                    if (t.startsWith('## ')) {
+                        cIdx++; vIdx = 0;
+                    } else if (t.startsWith('### ')) {
+                        vIdx++;
+                    }
+
+                    const searchLine = t.toLowerCase().replace(/\s+/g, '');
+                    if (searchLine.includes(q) || getChoseong(searchLine).includes(q)) {
+                        let id = null;
+                        if (t.startsWith('### ')) id = `toc-3-${cIdx}-${vIdx}`;
+                        else if (t.startsWith('## ')) id = `toc-2-${cIdx}`;
+                        
+                        matches.push({ text: t, id: id });
+                    }
+                });
+
+                if (matches.length > 0) {
+                    const group = document.createElement('div');
+                    group.style.padding = '8px 0';
+                    group.style.borderBottom = '1px solid #f0f0f0';
+                    group.innerHTML = `<div style="font-size:11px; color:var(--gold-active); font-weight:800; margin-bottom:4px;">[${title}]</div>`;
+                    
+                    matches.forEach(m => {
+                        const item = document.createElement('div');
+                        item.style.padding = '10px 8px';
+                        item.style.fontSize = '14px';
+                        item.style.color = '#444';
+                        item.style.fontWeight = '600';
+                        item.innerText = m.text.replace(/^#+\s+/, '');
+                        item.onclick = () => loadYeokdoMobile(title, m.id);
+                        group.appendChild(item);
+                    });
+                    container.appendChild(group);
+                }
+            });
+
+            if (container.innerHTML === '') {
+                container.innerHTML = '<div style="padding:40px 0; text-align:center; color:#999; font-size:14px;">검색 결과가 없습니다.</div>';
+            }
+        }
+
         function openPDF(filename) {
             window.open(filename, '_blank');
         }
@@ -512,9 +602,15 @@
                 setTimeout(() => {
                     const el = document.getElementById(targetId);
                     if (el) {
-                        document.getElementById('readerContent').scrollTop = el.offsetTop - 20;
+                        document.querySelectorAll('.highlight-target').forEach(h => h.classList.remove('highlight-target'));
+                        el.classList.add('highlight-target');
+                        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        // [집행 명령] 3초 후 하이라이트 제거
+                        setTimeout(() => {
+                            el.classList.remove('highlight-target');
+                        }, 3000);
                     }
-                }, 100);
+                }, 300);
             } else {
                 document.getElementById('readerContent').scrollTop = 0;
             }
@@ -844,18 +940,19 @@
                 let foundChapter = "";
                 for (let i = 0; i < lines.length; i++) {
                     const line = lines[i].trim();
-                    const match = line.match(/^<(\d+)>/);
+                    const match = line.match(/^<(\d+)>(.*)/);
                     if (match) {
-                        foundChapter = match[0];
+                        foundChapter = `<${match[1]}>`;
                     }
-                    if (line === targetLineText) {
+                    // [최종 패치] 장 번호 포함 매칭 보장
+                    if (line.includes(targetLineText)) {
                         targetChapter = foundChapter;
                         break;
                     }
                 }
             }
 
-            // 현재 컨텍스트 업데이트 (복사 및 즐겨찾기용)
+            // 현재 컨텍스트 업데이트
             CURRENT_CONTEXT = {
                 book: bookName,
                 chapter: targetChapter,
@@ -869,10 +966,12 @@
                 let processedLine = line.trim();
                 if (!processedLine) return;
                 
+                let displayLine = processedLine;
                 if (bookName === '동곡비서') {
-                    const match = processedLine.match(/^<(\d+)>/);
+                    const match = processedLine.match(/^<(\d+)>(.*)/);
                     if (match) {
-                        currentChapter = match[0];
+                        currentChapter = `<${match[1]}>`;
+                        displayLine = `${match[1]}. ${match[2].trim()}`;
                     }
                 } else if (bookName.includes('안원전') && processedLine.includes("天地開闢經 第一篇 辛丑年")) {
                     processedLine = processedLine.replace("天地開闢經 第一篇 辛丑年", "천지개벽경 제1편 신축년");
@@ -886,10 +985,11 @@
 
                 if (currentChapter === targetChapter) {
                     const lineId = `reader-line-${idx}`;
-                    let isSpecialMatch = (processedLine === targetLineText);
+                    // [최종 패치] 포함 매칭 방식 적용
+                    let isSpecialMatch = (processedLine.includes(targetLineText));
                     
                     if (isSpecialMatch && !firstMatchIdInReader) {
-                        firstMatchIdInReader = lineId;
+                        firstMatchIdInReader = (bookName === '동곡비서') ? 'target-focus' : lineId;
                     }
 
                     if (processedLine.startsWith('## ')) {
@@ -900,7 +1000,10 @@
                         const cleanLine = processedLine.toLowerCase().replace(/\s+/g, '');
                         let shouldHighlight = isSpecialMatch || (highlightQuery && (cleanLine.includes(highlightQuery) || getChoseong(cleanLine).includes(highlightQuery)));
                         
-                        html += `<p id="${lineId}" class="${shouldHighlight ? 'highlight-verse' : ''}">${processedLine}</p>`;
+                        const pId = (isSpecialMatch && bookName === '동곡비서') ? 'id="target-focus"' : `id="${lineId}"`;
+                        const pClass = shouldHighlight ? (isSpecialMatch && bookName === '동곡비서' ? 'highlight-target' : 'highlight-verse') : '';
+                        
+                        html += `<p ${pId} class="${pClass}">${displayLine}</p>`;
                     }
                 }
             });
@@ -909,28 +1012,19 @@
             layer.style.display = 'flex';
             document.body.style.overflow = 'hidden';
 
-            if (bookName === '동곡비서') {
-                await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
-                setTimeout(() => {
-                    const targetEl = document.getElementById(firstMatchIdInReader);
-                    if (targetEl) {
-                        document.querySelectorAll('.highlight-target').forEach(el => el.classList.remove('highlight-target'));
-                        targetEl.classList.add('highlight-target');
-                        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                    } else {
-                        content.scrollTop = 0;
-                    }
-                }, 500);
-            } else {
-                setTimeout(() => {
-                    const targetEl = document.getElementById(firstMatchIdInReader);
+            // [집행 명령] 중앙 안착 및 500ms 지연 스크롤 보장
+            const waitTime = (bookName === '동곡비서') ? 500 : 300;
+            setTimeout(() => {
+                requestAnimationFrame(() => {
+                    const targetId = (bookName === '동곡비서') ? 'target-focus' : firstMatchIdInReader;
+                    const targetEl = document.getElementById(targetId);
                     if (targetEl) {
                         targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                     } else {
                         content.scrollTop = 0;
                     }
-                }, 300);
-            }
+                });
+            }, waitTime);
         }
 
         function copyCurrentContent() {

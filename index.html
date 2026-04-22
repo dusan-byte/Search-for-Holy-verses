@@ -9,6 +9,8 @@
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>성구(原典) 검색 ver 1.0</title>
+    <!-- [미학적 고도화] 고전 서체 라이브러리 임포트 -->
+    <link href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Noto+Serif+KR:wght@400;700;900&family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
     <script>
         // [무조건 반사] 모바일 강제 리다이렉트 (768px 미만 또는 Mobile UA)
         if (window.innerWidth < 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
@@ -29,7 +31,9 @@
             --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
             --text-primary: #e8e8e8;
             --text-secondary: #9aa0a6;
-            --font-main: "Apple SD Gothic Neo", "Nanum Myeongjo", "Batang", "AppleMyungjo", serif;
+            --gold-premium: #f3d47a;
+            --font-title: 'Song Myung', serif;
+            --font-main: 'Noto Serif KR', serif;
         }
 
         body,
@@ -104,6 +108,7 @@
             font-weight: 700;
             color: var(--gold);
             letter-spacing: 2px;
+            font-family: var(--font-title);
         }
 
         .brand-name {
@@ -117,24 +122,26 @@
         }
 
         .sidebar-section-title {
-            padding: 24px 24px 1.5rem;
-            font-size: 13px;
+            padding: 16px 24px 0.8rem;
+            font-size: 1.25rem; /* [위계 정립] 대제목 크기 상향 */
             color: #ffd700;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 1px;
             border-top: 1px solid var(--glass-border);
-            margin-top: 10px;
+            margin-top: 20px;
             opacity: 1;
             text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+            font-family: var(--font-title);
         }
 
         #readerContent {
             white-space: pre-wrap;
-            line-height: 1.8;
-            font-family: 'Noto Serif KR', 'Malgun Gothic', serif;
+            line-height: 1.75;
+            font-family: var(--font-main);
             color: #eee;
             font-size: 1.15rem;
+            letter-spacing: -0.01em;
         }
 
         .search-container {
@@ -287,13 +294,15 @@
         }
 
         .book-item-title {
-            padding: 15px 24px;
+            padding: 8px 24px; /* [간격 축소] 조밀화 패치 */
             display: flex;
             justify-content: space-between;
             align-items: center;
             width: 100%;
             box-sizing: border-box;
             letter-spacing: 0.5px;
+            font-family: var(--font-title);
+            font-weight: 500;
         }
 
         .arrow-icon {
@@ -309,8 +318,8 @@
         }
 
         .book-item:hover .book-item-title {
-            background: rgba(255, 255, 255, 0.05);
-            color: var(--text-primary);
+            background: rgba(212, 175, 55, 0.1); /* [호버 미학] 금색 빛 효과 */
+            color: var(--gold-premium);
         }
 
         .book-item.active {
@@ -339,8 +348,8 @@
         .toc-item {
             font-size: 13px;
             color: var(--text-secondary);
-            padding: 6px 12px;
-            margin-bottom: 2px;
+            padding: 4px 12px; /* [간격 축소] */
+            margin-bottom: 1px;
             border-radius: 6px;
             transition: all 0.2s ease;
             cursor: pointer;
@@ -349,11 +358,12 @@
             text-overflow: ellipsis;
             line-height: 1.4;
             border-left: 1px solid var(--glass-border);
+            font-family: var(--font-title);
         }
 
         .toc-item:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: var(--text-primary);
+            background: rgba(212, 175, 55, 0.08);
+            color: var(--gold-premium);
             border-left-color: var(--gold);
         }
 
@@ -387,6 +397,7 @@
             font-size: 24px;
             font-weight: 600;
             color: var(--gold);
+            font-family: var(--font-title);
         }
 
         .content-area {
@@ -427,12 +438,14 @@
         }
 
         .verse-text {
-            font-size: 17px;
-            line-height: 1.9;
+            font-size: 1.1rem;
+            line-height: 1.75;
             color: var(--text-secondary);
             margin-bottom: 15px;
             padding-left: 15px;
             border-left: 2px solid var(--glass-border);
+            font-family: var(--font-main);
+            letter-spacing: -0.01em;
         }
 
         .copy-icon {
@@ -718,7 +731,8 @@
 
         function cleanMarkdown(mdText) {
             let text = mdText.replace(/!\[.*?\]\(.*?\)/g, '');
-            text = text.replace(/<\/?[^>]+(>|$)/g, "");
+            // [최종 패치] <1>, <2> 등 장 번호 태그는 삭제하지 않고 보호함
+            text = text.replace(/<(?!\d+>)\/?[^>]+(>|$)/g, "");
             return text;
         }
 
@@ -1247,6 +1261,11 @@
             const readerContent = document.getElementById('readerContent');
             readerContent.style.display = 'block';
 
+            // [가독성 패치] 동곡비서의 경우 <숫자> 태그 앞에서 줄바꿈을 강제하여 문단을 분리함
+            if (title === '동곡비서') {
+                text = text.replace(/<(\d+)>/g, '\n<$1>');
+            }
+
             const lines = text.split('\n');
             let htmlContent = '';
 
@@ -1273,6 +1292,13 @@
                     htmlContent += `<h2 id="${id}" class="chapter-header${targetClass}" data-line="${lineId}">${cleanTitle}</h2>`;
                 } else if (line.startsWith('# ')) {
                 } else {
+                    // [동곡비서] 번호 분리 렌더링 (PC 버전 가독성 최적화)
+                    if (title === '동곡비서') {
+                        const match = line.match(/^<(\d+)>(.*)/);
+                        if (match) {
+                            displayLine = `<span class="line-number" style="color:#D4AF37; font-weight:bold; margin-right:12px;">${match[1]}.</span>${match[2].trim()}`;
+                        }
+                    }
                     htmlContent += `<p id="${lineId}" class="verse-text${targetClass}">${displayLine} <span class="copy-icon" onclick="copyToClipboard('${lineId}')" title="출처와 함께 복사">📋</span></p>`;
                 }
             }
