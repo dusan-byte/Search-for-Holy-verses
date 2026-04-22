@@ -495,6 +495,17 @@
             margin: 15px 0 !important;
         }
 
+        .highlight-target {
+            color: #fff !important; font-weight: 800; 
+            background: rgba(212, 175, 55, 0.3) !important; 
+            padding: 12px; border-radius: 8px; 
+            border-left: 6px solid var(--gold) !important; 
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+            transform: scale(1.02);
+            transition: all 0.4s ease-out;
+            margin: 15px 0 !important;
+        }
+
         .search-result-item:hover {
             background: rgba(255, 255, 255, 0.05) !important;
         }
@@ -1239,7 +1250,7 @@
             }
         }
 
-        function renderContent(text, title, targetLineIndex = -1) {
+        async function renderContent(text, title, targetLineIndex = -1) {
             document.getElementById('currentTitle').innerHTML = `${title} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(로컬 데이터 모드)</span>`;
 
             document.getElementById('welcomeScreen').style.display = 'none';
@@ -1253,14 +1264,34 @@
             let chapterIndex = 0;
             let verseIndex = 0;
 
+            let extractedChapter = "";
+            if (title === '동곡비서' && targetLineIndex !== -1) {
+                for (let i = targetLineIndex; i >= 0; i--) {
+                    const match = lines[i].trim().match(/^<(\d+)>/);
+                    if (match) {
+                        extractedChapter = match[0];
+                        document.getElementById('currentTitle').innerHTML = `${title} ${extractedChapter} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(로컬 데이터 모드)</span>`;
+                        break;
+                    }
+                }
+            }
+
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i].trim();
                 if (!line) continue;
 
                 let lineId = `bible-line-${i}`;
                 let isTarget = (i === targetLineIndex);
-                let targetClass = isTarget ? ' target-highlight' : '';
+                let targetClass = (isTarget && title !== '동곡비서') ? ' target-highlight' : '';
                 let displayLine = line;
+
+                if (title === '동곡비서') {
+                    const match = line.match(/^<(\d+)>/);
+                    if (match) {
+                        htmlContent += `<h2 id="toc-2-${match[1]}" class="chapter-header${targetClass}" data-line="${lineId}">${match[0]}</h2>`;
+                        continue;
+                    }
+                }
 
                 if (line.startsWith('### ')) {
                     const cleanTitle = line.replace('###', '').trim();
@@ -1279,17 +1310,33 @@
 
             readerContent.innerHTML = htmlContent;
 
-            if (targetLineIndex !== -1) {
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
+            if (title === '동곡비서') {
+                if (targetLineIndex !== -1) {
+                    await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+                    setTimeout(() => {
                         const targetEl = document.getElementById(`bible-line-${targetLineIndex}`) || document.querySelector(`[data-line="bible-line-${targetLineIndex}"]`);
                         if (targetEl) {
+                            document.querySelectorAll('.highlight-target').forEach(el => el.classList.remove('highlight-target'));
+                            targetEl.classList.add('highlight-target');
                             targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         }
-                    });
-                });
+                    }, 150);
+                } else {
+                    document.getElementById('contentArea').scrollTop = 0;
+                }
             } else {
-                document.getElementById('contentArea').scrollTop = 0;
+                if (targetLineIndex !== -1) {
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => {
+                            const targetEl = document.getElementById(`bible-line-${targetLineIndex}`) || document.querySelector(`[data-line="bible-line-${targetLineIndex}"]`);
+                            if (targetEl) {
+                                targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                        });
+                    });
+                } else {
+                    document.getElementById('contentArea').scrollTop = 0;
+                }
             }
         }
 
