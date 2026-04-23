@@ -181,7 +181,7 @@
 
         .search-input-wrapper input {
             width: 100%;
-            padding: 14px 35px 14px 16px; 
+            padding: 14px 35px 14px 40px; /* [아이콘 공간 확보] */
             box-sizing: border-box;
             background: rgba(0, 0, 0, 0.2);
             border: none;
@@ -199,7 +199,7 @@
 
         #yeokdoSearchInput {
             width: 100%;
-            padding: 12px 35px 12px 16px;
+            padding: 12px 35px 12px 40px; /* [아이콘 공간 확보] */
             box-sizing: border-box;
             background: rgba(0, 0, 0, 0.2);
             border: none;
@@ -212,6 +212,18 @@
 
         #yeokdoSearchInput:focus {
             box-shadow: 0 0 12px var(--gold-dim);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gold-premium);
+            font-size: 15px;
+            pointer-events: none;
+            opacity: 0.7;
+            z-index: 5;
         }
 
         .clear-btn {
@@ -626,6 +638,7 @@
             <div class="search-container">
                 <button id="globalSearchBtn" class="global-search-btn">전체 경전 검색</button>
                 <div class="search-input-wrapper" style="margin-top: 12px;">
+                    <span class="search-icon">🔍</span>
                     <input type="text" id="searchInput" placeholder="성구/초성 검색 (예: ㅈㅅ)">
                     <span class="clear-btn" id="searchClearBtn">✕</span>
                 </div>
@@ -647,6 +660,7 @@
                 </div>
                 <div style="padding: 0 24px 1.5rem;">
                     <div class="search-input-wrapper">
+                        <span class="search-icon">🔍</span>
                         <input type="text" id="yeokdoSearchInput" placeholder="역경 전용 검색...">
                         <span class="clear-btn" id="yeokdoClearBtn">✕</span>
                     </div>
@@ -934,7 +948,7 @@
             }, 500));
         }
 
-        function buildTOC(text) {
+        function buildTOC(text, bookName) {
             const lines = text.split('\n');
             let tocHtml = '';
             let chapterIndex = 0;
@@ -943,14 +957,24 @@
             for (let line of lines) {
                 line = line.trim();
                 if (line.startsWith('### ')) {
-                    const title = line.replace('###', '').trim();
+                    let title = line.replace('###', '').trim();
+                    // [정역 목차 교정] 불렛 기호 제거 및 텍스트 정제
+                    title = title.replace(/^[•·\s]+/, ''); 
                     const id = `toc-3-${chapterIndex}-${verseIndex++}`;
                     tocHtml += `<div class="toc-item level-3" onclick="scrollToId('${id}')">${title}</div>`;
                 } else if (line.startsWith('## ')) {
-                    const title = line.replace('##', '').trim();
+                    let title = line.replace('##', '').trim();
+                    // [정역 목차 교정] 불렛 기호 제거 및 텍스트 정제
+                    title = title.replace(/^[•·\s]+/, '');
                     verseIndex = 0;
                     const id = `toc-2-${++chapterIndex}`;
                     tocHtml += `<div class="toc-item level-2" onclick="scrollToId('${id}')">${title}</div>`;
+                } else if (line.startsWith('# ') && bookName === '정역(正易)') {
+                    let title = line.replace('#', '').trim();
+                    title = title.replace(/^[•·\s]+/, '');
+                    // [대목차 삽입] 大易序, 十五一言, 十一一言 등 반영을 위한 ID 및 스타일 적용
+                    const id = `toc-1-${++chapterIndex}`;
+                    tocHtml += `<div class="toc-item level-2" style="font-weight: 800; color: #ffd700;" onclick="scrollToId('${id}')">${title}</div>`;
                 }
             }
             return tocHtml;
@@ -1240,7 +1264,7 @@
             const tocContainerId = `toc-${bookName.replace(/\s+/g, '-')}`;
             const tocContainer = document.getElementById(tocContainerId);
             if (tocContainer && !tocContainer.hasChildNodes()) {
-                tocContainer.innerHTML = buildTOC(cleanedText);
+                tocContainer.innerHTML = buildTOC(cleanedText, bookName);
             }
 
             const activeEl = document.querySelector('.book-item.active');
@@ -1357,7 +1381,7 @@
             const tocEl = document.getElementById(`toc-yeokdo-${title.replace(/\s+/g, '-')}`);
             if (tocEl) {
                 document.querySelectorAll('.toc-container').forEach(el => el.innerHTML = '');
-                tocEl.innerHTML = buildTOC(text);
+                tocEl.innerHTML = buildTOC(text, title);
             }
 
             if (targetLineIndex !== -1) {
@@ -1389,17 +1413,22 @@
                 let lineId = `yeokdo-line-${i}`;
 
                 if (trimmed.startsWith('### ')) {
-                    const title = trimmed.replace('###', '').trim();
+                    let title = trimmed.replace('###', '').trim();
+                    title = title.replace(/^[•·\s]+/, ''); // [정역 텍스트 정제]
                     const id = `toc-3-${chapterIndex}-${verseIndex++}`;
                     html += `<h3 id="${id}" class="verse-header${targetClass}" data-line="${lineId}">${title}</h3>\n`;
                 } else if (trimmed.startsWith('## ')) {
-                    const title = trimmed.replace('##', '').trim();
+                    let title = trimmed.replace('##', '').trim();
+                    title = title.replace(/^[•·\s]+/, ''); // [정역 텍스트 정제]
                     verseIndex = 0;
                     const id = `toc-2-${++chapterIndex}`;
                     html += `<h2 id="${id}" class="chapter-header${targetClass}" data-line="${lineId}">${title}</h2>\n`;
                 } else if (trimmed.startsWith('# ')) {
-                    const title = trimmed.replace('#', '').trim();
-                    html += `<h1 class="book-title${targetClass}" data-line="${lineId}">${title}</h1>\n`;
+                    let title = trimmed.replace('#', '').trim();
+                    title = title.replace(/^[•·\s]+/, ''); // [정역 텍스트 정제]
+                    verseIndex = 0;
+                    const id = `toc-1-${++chapterIndex}`; // TOC와 싱크를 맞추기 위한 ID 부여
+                    html += `<h1 id="${id}" class="book-title${targetClass}" data-line="${lineId}">${title}</h1>\n`;
                 } else {
                     if (trimmed) {
                         html += `<p id="${lineId}" class="verse-text${targetClass}">${lines[i]} <span class="copy-icon" onclick="copyToClipboard('${lineId}')" title="출처와 함께 복사">📋</span></p>\n`;
