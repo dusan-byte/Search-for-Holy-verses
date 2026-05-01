@@ -8,7 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>성구(原典) 검색 ver 1.0</title>
+    <title>Hyunmu 1.3</title>
     <!-- [미학적 고도화] 고전 서체 라이브러리 임포트 -->
     <link href="https://fonts.googleapis.com/css2?family=Song+Myung&family=Noto+Serif+KR:wght@400;700;900&family=Outfit:wght@400;700;800&display=swap" rel="stylesheet">
     <script>
@@ -123,7 +123,7 @@
 
         .sidebar-section-title {
             padding: 16px 24px 0.8rem;
-            font-size: 1.25rem; /* [위계 정립] 대제목 크기 상향 */
+            font-size: 1.25rem;
             color: #ffd700;
             font-weight: 800;
             text-transform: uppercase;
@@ -136,7 +136,7 @@
         }
 
         #readerContent {
-            white-space: pre-wrap;
+            white-space: pre-wrap !important;
             line-height: 1.75;
             font-family: var(--font-main);
             color: #eee;
@@ -181,7 +181,7 @@
 
         .search-input-wrapper input {
             width: 100%;
-            padding: 14px 35px 14px 40px; /* [아이콘 공간 확보] */
+            padding: 14px 35px 14px 40px;
             box-sizing: border-box;
             background: rgba(0, 0, 0, 0.2);
             border: none;
@@ -199,7 +199,7 @@
 
         #yeokdoSearchInput {
             width: 100%;
-            padding: 12px 35px 12px 40px; /* [아이콘 공간 확보] */
+            padding: 12px 35px 12px 40px;
             box-sizing: border-box;
             background: rgba(0, 0, 0, 0.2);
             border: none;
@@ -306,7 +306,7 @@
         }
 
         .book-item-title {
-            padding: 8px 24px; /* [간격 축소] 조밀화 패치 */
+            padding: 8px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -330,7 +330,7 @@
         }
 
         .book-item:hover .book-item-title {
-            background: rgba(212, 175, 55, 0.1); /* [호버 미학] 금색 빛 효과 */
+            background: rgba(212, 175, 55, 0.1);
             color: var(--gold-premium);
         }
 
@@ -360,7 +360,7 @@
         .toc-item {
             font-size: 13px;
             color: var(--text-secondary);
-            padding: 4px 12px; /* [간격 축소] */
+            padding: 4px 12px;
             margin-bottom: 1px;
             border-radius: 6px;
             transition: all 0.2s ease;
@@ -386,8 +386,114 @@
             border-left-color: rgba(212, 175, 55, 0.5);
         }
 
-        .toc-item.level-3 {
-            padding-left: 20px;
+        .yeokdo-h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--gold-premium);
+            margin-top: 30px;
+            margin-bottom: 20px;
+            display: block;
+            border-bottom: 2px solid var(--gold);
+            padding-bottom: 10px;
+            font-family: var(--font-title);
+            text-align: center;
+            scroll-margin-top: 150px;
+        }
+
+        .yeokdo-h2 {
+            font-size: 22px;
+            font-weight: bold;
+            color: #e2b808;
+            margin-top: 25px;
+            margin-bottom: 15px;
+            display: block;
+            border-bottom: 1px solid rgba(226, 184, 8, 0.2);
+            padding-bottom: 8px;
+            font-family: var(--font-title);
+            scroll-margin-top: 150px;
+        }
+
+        .yeokdo-h3 {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-primary);
+            margin-top: 20px;
+            margin-bottom: 10px;
+            display: block;
+            border-left: 3px solid var(--gold);
+            padding-left: 10px;
+            font-family: var(--font-title);
+            scroll-margin-top: 150px;
+        }
+
+        /* 주역/정역/십익 집중 조명 효과 */
+        .hexagram-focus-title {
+            text-shadow: 0 0 8px rgba(212, 175, 55, 0.6);
+            color: var(--gold-premium) !important; /* 차분한 황금빛 */
+            font-weight: 800;
+            transition: all 0.4s ease;
+            display: inline-block;
+        }
+        
+        .hexagram-container, .yeokdo-section-container {
+            scroll-margin-top: 150px; /* 상단 헤더 완벽 회피 */
+            margin-bottom: 80px;
+            padding: 40px 20px;
+            border-bottom: 1px solid rgba(212,175,55,0.05);
+            transition: all 0.4s ease;
+            opacity: 1 !important; /* Zero-Dimmed Policy: 항상 100% 선명도 유지 */
+        }
+
+        .hexagram-container.focus-active, .yeokdo-section-container.focus-active {
+            opacity: 1 !important;
+            filter: drop-shadow(0 0 5px rgba(212,175,55,0.1));
+            z-index: 10;
+        }
+        
+        .hexagram-container.focus-active .verse-text, 
+        .yeokdo-section-container.focus-active .verse-text,
+        .hexagram-container.focus-active .yeokdo-h3,
+        .yeokdo-section-container.focus-active .yeokdo-h3,
+        .hexagram-container.focus-active .yeokdo-h2,
+        .yeokdo-section-container.focus-active .yeokdo-h2 {
+            opacity: 1 !important;
+            transition: all 0.4s ease;
+        }
+
+        .hexagram-container.dimmed, .yeokdo-section-container.dimmed {
+            opacity: 1 !important; /* 비활성 섹션 어두워짐 전면 차단 */
+            filter: none !important;
+        }
+
+        .toc-number-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            padding: 10px 5px;
+        }
+        .toc-number-item {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .toc-number-item:hover {
+            background: var(--gold-dim);
+            color: var(--gold);
+            border-color: var(--gold);
+        }
+        .toc-number-item.active {
+            background: var(--gold);
+            color: var(--bg-dark);
+            border-color: var(--gold-premium);
+            font-weight: 800;
+            box-shadow: 0 0 10px rgba(212,175,55,0.5);
         }
 
         .main-view {
@@ -458,19 +564,14 @@
             border-left: 2px solid var(--glass-border);
             font-family: var(--font-main);
             letter-spacing: -0.01em;
-        }
-
-        .copy-icon {
-            display: inline-block;
-            margin-left: 10px;
+            scroll-margin-top: 150px; /* 정밀 스크롤 오프셋 확보 */
             cursor: pointer;
-            opacity: 0.2;
-            transition: opacity 0.2s;
-            font-size: 15px;
+            transition: all 0.2s ease;
         }
 
-        .verse-text:hover .copy-icon {
-            opacity: 1;
+        .verse-text:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.02);
         }
 
         .floating-toggle-btn {
@@ -509,15 +610,14 @@
         }
 
         .target-highlight {
-            background-color: rgba(212, 175, 55, 0.15) !important;
-            border-left: 4px solid var(--gold) !important;
+            background-color: rgba(212, 175, 55, 0.1) !important;
+            border-left: 3px solid var(--gold) !important;
             padding: 10px 15px !important;
-            border-radius: 8px !important;
+            border-radius: 6px !important;
             color: var(--text-primary) !important;
             font-weight: 600 !important;
-            transition: all 0.5s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            margin: 15px 0 !important;
+            transition: all 0.4s ease;
+            margin: 12px 0 !important;
         }
 
         .search-result-item:hover {
@@ -537,7 +637,7 @@
             font-weight: bold;
             z-index: 1000;
             display: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             animation: fadeIn 0.3s;
         }
 
@@ -632,7 +732,7 @@
             <div class="sidebar-header">
                 <h1 style="margin: 0; padding: 10px 0; font-size: 20px; color: var(--gold); text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); font-weight: 800; line-height: 1.4;">
                     <div style="display: block;">성구(原典) 검색</div>
-                    <div style="display: block; font-size: 0.85em; font-weight: 600; margin-left: 25px; opacity: 0.95;">Hyunmu 1.0</div>
+                    <div style="display: block; font-size: 0.85em; font-weight: 600; margin-left: 25px; opacity: 0.95;">Hyunmu 1.3</div>
                 </h1>
             </div>
             <div class="search-container">
@@ -656,7 +756,7 @@
                 </ul>
 
                 <div class="sidebar-section-title">
-                    <span>역경 (易經)</span>
+                    <span>역경(易經)</span>
                 </div>
                 <div style="padding: 0 24px 1.5rem;">
                     <div class="search-input-wrapper">
@@ -677,7 +777,7 @@
             </header>
             <div id="contentArea" class="content-area">
                 <div id="welcomeScreen" class="welcome-message">
-                    <h2 style="color: var(--gold); margin-bottom: 20px;">Hyunmu 1.0</h2>
+                    <h2 style="color: var(--gold); margin-bottom: 20px;">Hyunmu 1.3</h2>
                     가장 최신의 성구 검색 엔진과<br>
                     역경(易經) 라이브러리를 경험해 보세요.
                 </div>
@@ -703,8 +803,14 @@
         console.log("🚀 성구 데이터를 로컬 자바스크립트로 초기화합니다...");
         let BIBLE_DATA = {};
         let BIBLE_LIST = [];
-        let YEOKDO_DATA = {};
-        let YEOKDO_LIST = [];
+        let YEOKDO_DATA_ALL = {};
+        let YEOKDO_MAP = {
+            "십익(十翼)": "십익",
+            "정역(正易)": "정역",
+            "주역(周易) 64괘(數)": "주역_수",
+            "주역(周易) 64괘(한글)": "주역_한글"
+        };
+        let YEOKDO_BOOKS = ["십익(十翼)", "정역(正易)", "주역(周易) 64괘(數)", "주역(周易) 64괘(한글)"];
         let isGlobalSearch = false;
 
         const HISTORY_KEY = 'hyunmu_pc_search_history';
@@ -713,18 +819,17 @@
             if (typeof window.BIBLE_DATA_RAW !== 'undefined') {
                 BIBLE_DATA = window.BIBLE_DATA_RAW;
                 BIBLE_LIST = Object.keys(BIBLE_DATA).sort();
-                if (typeof yeokdoData !== 'undefined') {
-                    YEOKDO_DATA = yeokdoData;
-                    YEOKDO_LIST = Object.keys(YEOKDO_DATA);
+                
+                if (typeof YEOKDO_DATA !== 'undefined') {
+                    YEOKDO_DATA_ALL = YEOKDO_DATA;
                 }
                 
-                console.log(`✅ 데이터 로드 완료: ${BIBLE_LIST.length}권의 경전 / ${YEOKDO_LIST.length}권의 역경 자료`);
+                console.log(`✅ 데이터 로드 완료: ${BIBLE_LIST.length}권의 경전 / 역경 4책`);
 
                 initApp();
             } else {
                 console.error("데이터 초기화 실패: data.js 파일을 찾을 수 없습니다.");
                 document.getElementById('currentTitle').innerHTML = "데이터 로딩 오류!";
-                document.getElementById('contentArea').innerHTML = "<p>data.js 파일을 제대로 불러오지 못했습니다. 같은 폴더에 파일이 있는지 확인해주세요.</p>";
             }
         });
 
@@ -745,7 +850,6 @@
 
         function cleanMarkdown(mdText) {
             let text = mdText.replace(/!\[.*?\]\(.*?\)/g, '');
-            // [최종 패치] <1>, <2> 등 장 번호 태그는 삭제하지 않고 보호함
             text = text.replace(/<(?!\d+>)\/?[^>]+(>|$)/g, "");
             return text;
         }
@@ -758,9 +862,7 @@
             };
         }
 
-        function getSearchHistory() {
-            return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]');
-        }
+        function getSearchHistory() { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
 
         function saveSearchHistory(query) {
             if (!query) return;
@@ -786,10 +888,8 @@
         function getFormattedSource(elementId) {
             const el = document.getElementById(elementId);
             if (!el) return "";
-            
             const bookName = window.currentBookName;
             let chapter = "", verse = "";
-            
             let prev = el.previousElementSibling;
             while (prev) {
                 if (prev.tagName === "H3" && !verse) verse = prev.innerText.trim();
@@ -797,54 +897,46 @@
                 if (chapter && verse) break;
                 prev = prev.previousElementSibling;
             }
-
-            let text = el.innerText.replace('📋', '').trim();
+            let text = el.innerText.trim();
             let location = [];
             if (chapter) location.push(chapter);
             if (verse) location.push(verse);
-            let locationStr = location.length > 0 ? " " + location.join(" ") : "";
-
-            return `${text}\n\n『${bookName}${locationStr}』`;
+            return `${text}\n\n『${bookName}${location.length > 0 ? " " + location.join(" ") : ""}』`;
         }
 
         function copyToClipboard(elementId) {
-            const formattedText = getFormattedSource(elementId);
-            navigator.clipboard.writeText(formattedText).then(() => {
-                showToast("📜 출처를 포함한 구절이 복사되었습니다.");
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-            });
+            navigator.clipboard.writeText(getFormattedSource(elementId)).then(() => showToast("📜 복사되었습니다."));
         }
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
             toast.textContent = msg;
             toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 1500);
+            setTimeout(() => { toast.style.display = 'none'; }, 1500);
         }
 
         function initApp() {
             const bookListEl = document.getElementById('bookList');
             const yeokdoListEl = document.getElementById('yeokdoList');
 
-            YEOKDO_LIST.forEach(title => {
+            YEOKDO_BOOKS.forEach(displayName => {
                 const li = document.createElement('li');
                 li.className = 'book-item';
-                li.dataset.book = title;
-
+                li.dataset.book = displayName;
                 const titleDiv = document.createElement('div');
                 titleDiv.className = 'book-item-title';
-                titleDiv.innerHTML = `<span>${title}</span><span class="arrow-icon">▶</span>`;
-                titleDiv.onclick = () => loadYeokdo(title);
+                titleDiv.innerHTML = `<span>${displayName}</span><span class="arrow-icon">▶</span>`;
+                titleDiv.onclick = (e) => {
+                    e.stopPropagation();
+                    loadYeokdo(displayName);
+                };
                 li.appendChild(titleDiv);
-
-                const tocDiv = document.createElement('div');
-                tocDiv.className = 'toc-container';
-                tocDiv.id = `toc-yeokdo-${title.replace(/\s+/g, '-')}`;
-                li.appendChild(tocDiv);
-
+                const tocUl = document.createElement('ul');
+                tocUl.className = 'toc-container';
+                tocUl.style.listStyle = 'none';
+                tocUl.style.padding = '10px 24px 15px 34px'; // 기존 CSS 패딩 적용
+                tocUl.id = `toc-yeokdo-${displayName.replace(/\s+/g, '-')}`;
+                li.appendChild(tocUl);
                 yeokdoListEl.appendChild(li);
             });
 
@@ -852,594 +944,450 @@
                 const li = document.createElement('li');
                 li.className = 'book-item';
                 li.dataset.book = book;
-
                 const titleDiv = document.createElement('div');
                 titleDiv.className = 'book-item-title';
                 titleDiv.innerHTML = `<span>${book}</span><span class="arrow-icon">▶</span>`;
-                titleDiv.onclick = (e) => {
-                    loadScripture(book);
-                };
+                titleDiv.onclick = () => loadScripture(book);
                 li.appendChild(titleDiv);
-
                 const tocDiv = document.createElement('div');
                 tocDiv.className = 'toc-container';
                 tocDiv.id = `toc-${book.replace(/\s+/g, '-')}`;
                 li.appendChild(tocDiv);
-
                 bookListEl.appendChild(li);
             });
 
             const searchInput = document.getElementById('searchInput');
-            const searchClearBtn = document.getElementById('searchClearBtn');
             const yeokdoSearchInput = document.getElementById('yeokdoSearchInput');
-            const yeokdoClearBtn = document.getElementById('yeokdoClearBtn');
 
-            const handleMainSearch = debounce((query) => {
+            searchInput.addEventListener('input', debounce((e) => {
+                const query = e.target.value.trim();
+                yeokdoSearchInput.value = '';
+                document.getElementById('searchClearBtn').style.display = query ? 'block' : 'none';
                 doBibleSearch(query, isGlobalSearch);
                 if(query.length >= 2) saveSearchHistory(query);
-            }, 300);
+            }, 300));
 
-            searchInput.addEventListener('input', (e) => {
+            yeokdoSearchInput.addEventListener('input', debounce((e) => {
                 const query = e.target.value.trim();
-                yeokdoSearchInput.value = '';
-                yeokdoClearBtn.style.display = 'none';
-                searchClearBtn.style.display = query ? 'block' : 'none';
-                handleMainSearch(query);
-            });
-
-            searchClearBtn.addEventListener('click', () => {
                 searchInput.value = '';
-                searchClearBtn.style.display = 'none';
-                doBibleSearch('', isGlobalSearch);
-            });
-
-            const handleYeokdoSearch = debounce((query) => {
+                document.getElementById('yeokdoClearBtn').style.display = query ? 'block' : 'none';
                 doYeokdoSearch(query);
-            }, 300);
-
-            yeokdoSearchInput.addEventListener('input', (e) => {
-                const query = e.target.value.trim();
-                searchInput.value = '';
-                searchClearBtn.style.display = 'none';
-                yeokdoClearBtn.style.display = query ? 'block' : 'none';
-                handleYeokdoSearch(query);
-            });
-
-            yeokdoClearBtn.addEventListener('click', () => {
-                yeokdoSearchInput.value = '';
-                yeokdoClearBtn.style.display = 'none';
-                doYeokdoSearch('');
-            });
+            }, 300));
 
             document.getElementById('globalSearchBtn').addEventListener('click', toggleGlobalSearch);
             document.getElementById('tocToggleBtn').addEventListener('click', () => {
                 const sidebar = document.getElementById('sidebar');
-                if (window.innerWidth <= 768) {
-                    sidebar.classList.toggle('show');
-                } else {
-                    sidebar.classList.toggle('collapsed');
-                }
+                if (window.innerWidth <= 768) sidebar.classList.toggle('show');
+                else sidebar.classList.toggle('collapsed');
             });
 
-            renderSearchHistory();
-
-            // Load last read state
             const lastBook = localStorage.getItem('hyunmu_last_read_book');
-            const lastScroll = parseInt(localStorage.getItem('hyunmu_last_read_scroll') || '0');
-            
-            if (lastBook && YEOKDO_LIST.includes(lastBook)) {
-                loadYeokdo(lastBook);
-            } else if (lastBook && BIBLE_LIST.includes(lastBook)) {
-                loadScripture(lastBook);
-            } else if (BIBLE_LIST.length > 0) {
-                loadScripture(BIBLE_LIST[0]);
-            }
-
-            setTimeout(() => {
-                document.getElementById('contentArea').scrollTop = lastScroll;
-            }, 200);
-
-            // Save scroll state
-            document.getElementById('contentArea').addEventListener('scroll', debounce((e) => {
-                const searchArea = document.getElementById('searchResultsArea');
-                if (window.currentBookName && (!searchArea.style.display || searchArea.style.display === 'none')) {
-                    localStorage.setItem('hyunmu_last_read_scroll', e.target.scrollTop);
-                }
-            }, 500));
+            if (lastBook && YEOKDO_BOOKS.includes(lastBook)) loadYeokdo(lastBook);
+            else if (lastBook && BIBLE_LIST.includes(lastBook)) loadScripture(lastBook);
+            else if (BIBLE_LIST.length > 0) loadScripture(BIBLE_LIST[0]);
         }
 
-        function buildTOC(text, bookName) {
-            const lines = text.split('\n');
-            let tocHtml = '';
-            let chapterIndex = 0;
-            let verseIndex = 0;
+        function loadYeokdo(displayName) {
+            const activeItem = document.querySelector(`.book-item[data-book="${displayName}"]`);
+            if (!activeItem) return;
 
-            for (let line of lines) {
-                line = line.trim();
-                if (line.startsWith('### ')) {
-                    let title = line.replace('###', '').trim();
-                    // [정역 목차 교정] 불렛 기호 제거 및 텍스트 정제
-                    title = title.replace(/^[•·\s]+/, ''); 
-                    const id = `toc-3-${chapterIndex}-${verseIndex++}`;
-                    tocHtml += `<div class="toc-item level-3" onclick="scrollToId('${id}')">${title}</div>`;
-                } else if (line.startsWith('## ')) {
-                    let title = line.replace('##', '').trim();
-                    // [정역 목차 교정] 불렛 기호 제거 및 텍스트 정제
-                    title = title.replace(/^[•·\s]+/, '');
-                    verseIndex = 0;
-                    const id = `toc-2-${++chapterIndex}`;
-                    tocHtml += `<div class="toc-item level-2" onclick="scrollToId('${id}')">${title}</div>`;
-                } else if (line.startsWith('# ') && bookName === '정역(正易)') {
-                    let title = line.replace('#', '').trim();
-                    title = title.replace(/^[•·\s]+/, '');
-                    // [대목차 삽입] 大易序, 十五一言, 十一一言 등 반영을 위한 ID 및 스타일 적용
-                    const id = `toc-1-${++chapterIndex}`;
-                    tocHtml += `<div class="toc-item level-2" style="font-weight: 800; color: #ffd700;" onclick="scrollToId('${id}')">${title}</div>`;
+            const wasActive = activeItem.classList.contains('active');
+            
+            // 모든 book-item에서 active 제거
+            document.querySelectorAll('.book-item').forEach(el => el.classList.remove('active'));
+            
+            if (!wasActive) {
+                activeItem.classList.add('active');
+                window.currentBookName = displayName;
+                // localStorage.setItem('hyunmu_last_read_book', displayName); // 본문 로드 시에만 저장하도록 변경 가능하나 유지
+
+                const tocEl = document.getElementById(`toc-yeokdo-${displayName.replace(/\s+/g, '-')}`);
+                if (tocEl) tocEl.innerHTML = renderYeokdoTOC(displayName);
+
+                // 본문은 바꾸지 않고 안내 메시지만 (필요시)
+                const reader = document.getElementById('readerContent');
+                if (reader.innerHTML === "" || reader.style.display === 'none') {
+                    reader.style.display = 'block';
+                    reader.innerHTML = `<div class="welcome-message" style="margin-top:20px;">좌측 목차에서 소제목을 선택하면 본문이 표시됩니다.</div>`;
+                    document.getElementById('currentTitle').innerHTML = `${displayName} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(易經)</span>`;
                 }
             }
+        }
+
+        function renderYeokdoTOC(displayName) {
+            const internalKey = YEOKDO_MAP[displayName];
+            const data = YEOKDO_DATA_ALL[internalKey];
+            if (!data) return '';
+            
+            // 주역 64괘(數 및 한글)는 8x8 수리 행렬 목차
+            if (internalKey === '주역_수' || internalKey === '주역_한글') {
+                let gridHtml = '<div class="toc-number-grid">';
+                const keys = Object.keys(data)
+                    .filter(k => parseInt(k) >= 1 && parseInt(k) <= 64)
+                    .sort((a, b) => parseInt(a) - parseInt(b));
+                keys.forEach(key => {
+                    const num = parseInt(key);
+                    const title = data[key].title || key;
+                    gridHtml += `<div class="toc-number-item" id="grid-item-${internalKey}-${key}" title="${title}" onclick="event.stopPropagation(); loadYeokdoSection('${displayName}', '${key}')">${num}</div>`;
+                });
+                gridHtml += '</div>';
+                return gridHtml;
+            }
+
+            // 십익(十翼)은 파일 내 실제 순서대로 7대 정예 목차 출력
+            if (internalKey === '십익') {
+                const targetPatterns = ['雜 卦 傳', '序 卦 傳', '乾卦 文言傳', '坤卦 文言傳', '說 卦 傳', '系辭上傳', '系辭下傳'];
+                let tocHtml = '';
+                const keys = Object.keys(data).sort(); // 000_, 001_ 순서 보존
+                keys.forEach(key => {
+                    const title = data[key].title || '';
+                    const normTitle = title.replace(/\s+/g, ' ').trim();
+                    const isTarget = targetPatterns.some(p => normTitle.includes(p.replace(/\s+/g, ' ').trim()));
+                    
+                    if (isTarget) {
+                        tocHtml += `<li class="toc-item level-2" id="toc-yeokdo-${internalKey}-${key}" onclick="event.stopPropagation(); loadYeokdoSection('${displayName}', '${key}')">${title}</li>`;
+                    }
+                });
+                return tocHtml;
+            }
+
+            let tocHtml = '';
+            const keys = Object.keys(data).sort(); 
+            keys.forEach(key => {
+                const item = data[key];
+                const title = item.title || key;
+                const level = item.level || 2;
+                tocHtml += `<li class="toc-item level-${level}" id="toc-yeokdo-${internalKey}-${key}" onclick="event.stopPropagation(); loadYeokdoSection('${displayName}', '${key}')">${title}</li>`;
+            });
             return tocHtml;
         }
 
-        function scrollToId(id) {
-            const el = document.getElementById(id);
-            if (el) {
-                const container = document.getElementById('contentArea');
-                container.scrollTo({
-                    top: el.offsetTop - container.offsetTop - 20,
-                    behavior: 'smooth'
-                });
-
-                if (window.innerWidth <= 768) {
-                    document.getElementById('sidebar').classList.remove('show');
-                }
-            }
-        }
-
-        function toggleGlobalSearch() {
-            isGlobalSearch = !isGlobalSearch;
-            const btn = document.getElementById('globalSearchBtn');
-            const searchInput = document.getElementById('searchInput');
-            const searchArea = document.getElementById('searchResultsArea');
-
-            if (isGlobalSearch) {
-                btn.classList.add('active');
-                btn.textContent = '전체 검색 모드 (해제하려면 클릭)';
-                searchInput.placeholder = "전체 경전에서 검색...";
-
-                document.querySelectorAll('.book-item').forEach(el => el.classList.remove('active'));
-
-                document.getElementById('currentTitle').innerHTML = `통합 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(전체 경전 대상)</span>`;
-                
-                if (searchInput.value.trim()) {
-                    doBibleSearch(searchInput.value.trim(), true);
-                } else {
-                    document.getElementById('welcomeScreen').style.display = 'none';
-                    document.getElementById('readerContent').style.display = 'none';
-                    searchArea.style.display = 'block';
-                    searchArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 전체 경전에서 결과를 찾아드립니다.</div>';
-                }
-                searchInput.focus();
-            } else {
-                btn.classList.remove('active');
-                btn.textContent = '전체 경전 검색';
-                searchInput.placeholder = "성구/초성 검색 (예: ㅈㅅ)";
-
-                const lastBook = window.currentBookName || BIBLE_LIST[0];
-                if (searchInput.value.trim()) {
-                    doBibleSearch(searchInput.value.trim(), false);
-                } else {
-                    if (lastBook) loadScripture(lastBook);
-                }
-            }
-        }
-
-        function doBibleSearch(queryStr, isGlobal) {
-            const query = queryStr.toLowerCase().replace(/\s+/g, '');
-            const searchArea = document.getElementById('searchResultsArea');
+        function loadYeokdoSection(displayName, secKey, targetLineIndex = -1) {
+            const internalKey = YEOKDO_MAP[displayName];
             
-            if (!query) {
-                if (isGlobal) {
-                    document.getElementById('welcomeScreen').style.display = 'none';
-                    document.getElementById('readerContent').style.display = 'none';
-                    searchArea.style.display = 'block';
-                    searchArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 전체 경전에서 결과를 찾아드립니다.</div>';
-                } else {
-                    const activeBook = document.querySelector('.book-item.active');
-                    if (activeBook && window.currentBookText) {
-                        renderContent(window.currentBookText, window.currentBookName);
+            // 주역_수, 주역_한글, 정역, 십익은 연속 흐름 렌더링 대상
+            if (internalKey === '주역_수' || internalKey === '주역_한글' || internalKey === '정역' || internalKey === '십익') {
+                const reader = document.getElementById('readerContent');
+                if (!reader.dataset.continuousBook || reader.dataset.continuousBook !== internalKey) {
+                    renderContinuousYeokdo(internalKey, displayName);
+                    reader.dataset.continuousBook = internalKey;
+                }
+                
+                // [Full Stream] 검색 결과 클릭 시 특정 구절 타겟팅, 일반 클릭 시 섹션 제목 타겟팅
+                const targetId = (targetLineIndex !== -1) ? `v-${internalKey}-${secKey}-${targetLineIndex}` : `section-${internalKey}-${secKey}`;
+                const targetEl = document.getElementById(targetId);
+
+                // [Zero-Dimmed Policy] 모든 강조 제거 및 dimmed 클래스 전면 배제 (잡괘전 수준의 선명도 강제)
+                document.querySelectorAll('.hexagram-container, .yeokdo-section-container, .verse-text, .yeokdo-h1, .yeokdo-h2, .yeokdo-h3').forEach(el => {
+                    el.classList.remove('focus-active', 'hexagram-focus-title', 'dimmed');
+                    el.style.opacity = "1"; 
+                });
+                
+                // 역경 본문 영역 강제 노출
+                document.getElementById('readerContent').style.display = 'block';
+                document.getElementById('searchResultsArea').style.display = 'none';
+                document.getElementById('welcomeScreen').style.display = 'none';
+
+                if (targetEl) {
+                    // [Golden Glow Signal] 해당 구절 또는 제목에 마스터의 황금빛 광채 부여
+                    targetEl.classList.add('hexagram-focus-title');
+                    
+                    // [Center-Focus Scroll] 정밀 스크롤 (화면 수직 중앙 정렬)
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+                    // 사이드바 그리드 또는 리스트 활성 상태 표시
+                    if (internalKey === '정역' || internalKey === '십익') {
+                        document.querySelectorAll('.toc-container .toc-item').forEach(el => el.style.cssText = '');
+                        const activeToc = document.getElementById(`toc-yeokdo-${internalKey}-${secKey}`);
+                        if (activeToc) activeToc.style.cssText = 'background:rgba(212,175,55,0.15); color:var(--gold); border-left-color:var(--gold);';
+                    } else {
+                        document.querySelectorAll('.toc-number-item').forEach(el => el.classList.remove('active'));
+                        const gridItem = document.getElementById(`grid-item-${internalKey}-${secKey}`);
+                        if (gridItem) gridItem.classList.add('active');
                     }
                 }
+                
+                if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('show');
                 return;
             }
 
-            document.getElementById('welcomeScreen').style.display = 'none';
-            document.getElementById('readerContent').style.display = 'none';
-            searchArea.style.display = 'block';
-
-            let resultsHtml = '';
-            let totalMatches = 0;
+            const section = YEOKDO_DATA_ALL[internalKey][secKey];
+            if (!section) return;
+            const text = section.content;
+            window.currentBookText = text;
+            document.getElementById('readerContent').dataset.continuousBook = ""; // 연속 모드 해제
+            renderYeokdoContent(text, displayName, secKey, targetLineIndex);
             
-            const targetBooks = isGlobal ? BIBLE_LIST : (window.currentBookName ? [window.currentBookName] : BIBLE_LIST);
+            document.querySelectorAll(`.toc-container .toc-item`).forEach(el => el.style.cssText = '');
+            const activeToc = document.getElementById(`toc-yeokdo-${internalKey}-${secKey}`);
+            if (activeToc) activeToc.style.cssText = 'background:rgba(212,175,55,0.15); color:var(--gold); border-left-color:var(--gold);';
+            if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('show');
+        }
 
-            targetBooks.forEach(bookName => {
-                const rawContent = BIBLE_DATA[bookName];
-                if(!rawContent) return;
-                const cleanContent = cleanMarkdown(rawContent);
-                const lines = cleanContent.split('\n');
-                
-                let currentChapter = "";
-                let currentVerse = "";
-                let matchesInBook = 0;
-                let bookHtml = '';
-                const isAnwonjeon = bookName.includes('안원전');
-                const seenKeys = new Set();
-
-                for (let i = 0; i < lines.length; i++) {
-                    let line = lines[i].trim();
-                    if (!line) continue;
-                    
-                    if (isAnwonjeon && line.includes("天地開闢經 第一篇 辛丑年")) {
-                        line = line.replace("天地開闢經 第一篇 辛丑年", "천지개벽경 제1편 신축년");
-                        currentChapter = "천지개벽경 제1편 신축년";
-                    } else if (line.startsWith('## ')) {
-                        currentChapter = line.replace('##', '').trim();
-                    } else if (line.startsWith('### ')) {
-                        currentVerse = line.replace('###', '').trim();
-                    }
-                    
-                    const searchLine = line.toLowerCase().replace(/\s+/g, '');
-                    if (searchLine.includes(query) || getChoseong(searchLine).includes(query)) {
-                        let key = isAnwonjeon ? `${bookName}-${currentChapter}` : `${bookName}-${currentChapter}-${currentVerse}`;
-                        
-                        if (!seenKeys.has(key)) {
-                            const displayChapter = currentChapter;
-                            const displayVerse = isAnwonjeon ? "" : currentVerse;
-                            const bookPrefix = isGlobal ? `<span style="color:#9aa0a6;">${bookName} &gt; </span>` : '';
-                            let displayLine = line;
-                            if (displayLine.startsWith('#')) displayLine = displayLine.replace(/^#+\s+/, '');
-                            
-                            bookHtml += `
-                                <div class="search-result-item" onclick="jumpToBible('${bookName}', ${i})" style="cursor:pointer; margin-bottom:15px; padding:10px; border-radius:8px; transition:background 0.2s;">
-                                    <h3 class="verse-header" style="margin-top:0;">${bookPrefix}${displayChapter} ${displayVerse ? '&gt; ' + displayVerse : ''}</h3>
-                                    <p class="verse-text match" style="border-left: 3px solid var(--gold); margin-bottom:0;">${displayLine}</p>
-                                </div>
-                            `;
-                            matchesInBook++;
-                            totalMatches++;
-                            seenKeys.add(key);
-                        }
-                    }
-                }
-                
-                if (matchesInBook > 0) {
-                    if (isGlobal) {
-                        resultsHtml += `<div class="search-result-book">${bookName} (${matchesInBook}건)</div>`;
-                    } else {
-                        resultsHtml += `<h2 class="chapter-header">검색 결과 (${matchesInBook}건)</h2>`;
-                    }
-                    resultsHtml += bookHtml;
-                }
+        function renderContinuousYeokdo(internalKey, displayName) {
+            const reader = document.getElementById('readerContent');
+            const data = YEOKDO_DATA_ALL[internalKey];
+            
+            // 주역 괘번호(01~64) 또는 정역의 원본 순서대로 정렬
+            const keys = Object.keys(data).sort((a, b) => {
+                if (a.includes('_') && b.includes('_')) return a.localeCompare(b);
+                return parseInt(a) - parseInt(b);
             });
-
-            if (totalMatches === 0) {
-                resultsHtml = `<p class="verse-text" style="text-align:center; margin-top:50px;">'${queryStr}'에 대한 성구 결과가 없습니다.</p>`;
-            } else {
-                const titleText = isGlobal ? '통합 검색' : `${window.currentBookName} 검색`;
-                document.getElementById('currentTitle').innerHTML = `${titleText} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(총 ${totalMatches}건 검색됨)</span>`;
-            }
             
-            searchArea.innerHTML = resultsHtml;
-            document.getElementById('contentArea').scrollTop = 0;
+            let fullHtml = ''; 
+            
+            keys.forEach(key => {
+                const item = data[key];
+                const text = item.content;
+                const lines = text.split('\n');
+                const bodyHtml = lines.map((line, i) => {
+                    const trimmed = line.trim();
+                    let cls = "verse-text";
+                    if (trimmed.startsWith('### ')) cls = "yeokdo-h3";
+                    else if (trimmed.startsWith('## ')) cls = "yeokdo-h2";
+                    else if (trimmed.startsWith('# ')) cls = "yeokdo-h1";
+                    
+                    const content = (cls !== "verse-text") ? line.replace(/#+/g, '').trim() : (line.replace(/</g,'&lt;').replace(/>/g,'&gt;') || '&nbsp;');
+                    const clickAttr = (cls === "verse-text") ? ` onclick="copyToClipboard('v-${internalKey}-${key}-${i}')"` : "";
+                    return `<div id="v-${internalKey}-${key}-${i}" class="${cls}" style="white-space:pre-wrap; margin-bottom:0;"${clickAttr}>${content}</div>`;
+                }).join('');
+                
+                const containerClass = (internalKey === '정역' || internalKey === '십익') ? 'yeokdo-section-container' : 'hexagram-container';
+                fullHtml += `<div id="section-${internalKey}-${key}" class="${containerClass}">
+                    <div style="padding-left:15px;">${bodyHtml}</div>
+                </div>`;
+            });
+            
+            reader.innerHTML = fullHtml;
+        }
+
+        function renderYeokdoContent(text, displayName, secKey, targetLineIndex = -1) {
+            const reader = document.getElementById('readerContent');
+            const lines = text.split('\n');
+            const bodyHtml = lines.map((line, i) => {
+                const tCls = (i === targetLineIndex) ? ' target-highlight' : '';
+                const trimmed = line.trim();
+                
+                if (trimmed.startsWith('### ')) {
+                    return `<div id="yeokdo-line-${i}" class="yeokdo-h3${tCls}" style="white-space:pre-wrap; margin-bottom:0;">${line.replace('###', '').trim()}</div>`;
+                } else if (trimmed.startsWith('## ')) {
+                    return `<div id="yeokdo-line-${i}" class="yeokdo-h2${tCls}" style="white-space:pre-wrap; margin-bottom:0;">${line.replace('##', '').trim()}</div>`;
+                } else if (trimmed.startsWith('# ')) {
+                    return `<div id="yeokdo-line-${i}" class="yeokdo-h1${tCls}" style="white-space:pre-wrap; margin-bottom:0;">${line.replace('#', '').trim()}</div>`;
+                }
+                
+                return `<div id="yeokdo-line-${i}" class="verse-text${tCls}" style="white-space:pre-wrap; margin-bottom:0;" onclick="copyToClipboard('yeokdo-line-${i}')">${line.replace(/</g,'&lt;').replace(/>/g,'&gt;') || '&nbsp;'}</div>`;
+            }).join('');
+            
+            // secKey에서 정렬용 인덱스 제거하여 표시
+            const displaySecKey = secKey.replace(/^\d+_/, '');
+            reader.innerHTML = `<h2 class="chapter-header" style="margin-top:0;">${displayName} &gt; ${displaySecKey}</h2><div style="border-left:2px solid var(--glass-border); padding-left:15px; white-space:pre-wrap;">${bodyHtml}</div>`;
+            if (targetLineIndex !== -1) document.getElementById(`yeokdo-line-${targetLineIndex}`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+            else document.getElementById('contentArea').scrollTop = 0;
         }
 
         function doYeokdoSearch(queryStr) {
             const query = queryStr.toLowerCase().replace(/\s+/g, '');
             const searchArea = document.getElementById('searchResultsArea');
-            
-            if (!query) {
-                const activeBook = document.querySelector('.book-item.active');
-                if (activeBook && window.currentBookText) {
-                    if (YEOKDO_LIST.includes(window.currentBookName)) {
-                        loadYeokdo(window.currentBookName);
-                    }
-                } else {
-                    document.getElementById('welcomeScreen').style.display = 'none';
-                    document.getElementById('readerContent').style.display = 'none';
-                    searchArea.style.display = 'block';
-                    searchArea.innerHTML = '<div class="welcome-message">검색어를 입력하시면 역경(易經) 문서에서 결과를 찾아드립니다.</div>';
-                }
-                return;
-            }
-
-            if (isGlobalSearch) {
-                isGlobalSearch = false;
-                const btn = document.getElementById('globalSearchBtn');
-                btn.classList.remove('active');
-                btn.textContent = '전체 경전 검색';
-                document.getElementById('searchInput').placeholder = "성구/초성 검색 (예: ㅈㅅ)";
-            }
-
+            if (!query) return;
             document.getElementById('welcomeScreen').style.display = 'none';
             document.getElementById('readerContent').style.display = 'none';
             searchArea.style.display = 'block';
-
-            let resultsHtml = '';
-            let totalMatches = 0;
-
-            YEOKDO_LIST.forEach(bookName => {
-                const rawContent = YEOKDO_DATA[bookName];
-                if(!rawContent) return;
-                const lines = rawContent.split('\n');
-                
-                let currentChapter = "";
-                let currentVerse = "";
-                let matchesInBook = 0;
-                let bookHtml = '';
-                const seenKeys = new Set();
-
-                for (let i = 0; i < lines.length; i++) {
-                    let line = lines[i].trim();
-                    if (!line) continue;
-                    
-                    if (line.startsWith('## ')) currentChapter = line.replace('##', '').trim();
-                    else if (line.startsWith('### ')) currentVerse = line.replace('###', '').trim();
-                    
-                    const searchLine = line.toLowerCase().replace(/\s+/g, '');
-                    if (searchLine.includes(query) || getChoseong(searchLine).includes(query)) {
-                        let key = `${bookName}-${currentChapter}-${currentVerse}`;
-                        
-                        if (!seenKeys.has(key)) {
-                            const displayChapter = currentChapter;
-                            const displayVerse = currentVerse;
-                            let displayLine = line;
-                            if (displayLine.startsWith('#')) displayLine = displayLine.replace(/^#+\s+/, '');
-                            
-                            bookHtml += `
-                                <div class="search-result-item" onclick="jumpToYeokdo('${bookName}', ${i})" style="cursor:pointer; margin-bottom:15px; padding:10px; border-radius:8px; transition:background 0.2s;">
-                                    <h3 class="verse-header" style="margin-top:0;"><span style="color:#9aa0a6;">${bookName} &gt; </span>${displayChapter} ${displayVerse ? '&gt; ' + displayVerse : ''}</h3>
-                                    <p class="verse-text match" style="border-left: 3px solid var(--gold); margin-bottom:0;">${displayLine}</p>
-                                </div>
-                            `;
-                            matchesInBook++;
-                            totalMatches++;
-                            seenKeys.add(key);
+            let resultsHtml = '', totalMatches = 0;
+            YEOKDO_BOOKS.forEach(displayName => {
+                const internalKey = YEOKDO_MAP[displayName];
+                const catData = YEOKDO_DATA_ALL[internalKey];
+                let matchesInBook = 0, bookHtml = '';
+                Object.keys(catData).forEach(secKey => {
+                    const text = catData[secKey].content;
+                    const lines = text.split('\n');
+                    lines.forEach((line, i) => {
+                        if (line.toLowerCase().replace(/\s+/g, '').includes(query) || getChoseong(line).includes(query)) {
+                            bookHtml += `<div class="search-result-item" onclick="loadScripture('${displayName}', ${i}, '${secKey}')" style="cursor:pointer; margin-bottom:15px; padding:10px; border-radius:8px;">
+                                <h3 class="verse-header" style="margin-top:0;"><span style="color:#9aa0a6;">${displayName} &gt; </span>${secKey}</h3>
+                                <p class="verse-text match" style="border-left:3px solid var(--gold); margin-bottom:0;">${line.replace(/^#+\s+/,'')}</p>
+                            </div>`;
+                            matchesInBook++; totalMatches++;
                         }
-                    }
-                }
-                
-                if (matchesInBook > 0) {
-                    resultsHtml += `<div class="search-result-book">${bookName} (${matchesInBook}건)</div>`;
-                    resultsHtml += bookHtml;
-                }
+                    });
+                });
+                if (matchesInBook > 0) resultsHtml += `<div class="search-result-book">${displayName} (${matchesInBook}건)</div>` + bookHtml;
             });
-
-            if (totalMatches === 0) {
-                resultsHtml = `<p class="verse-text" style="text-align:center; margin-top:50px;">'${queryStr}'에 대한 역경 검색 결과가 없습니다.</p>`;
-            } else {
-                document.getElementById('currentTitle').innerHTML = `역경(易經) 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(총 ${totalMatches}건 검색됨)</span>`;
-            }
-            
-            searchArea.innerHTML = resultsHtml;
-            document.getElementById('contentArea').scrollTop = 0;
+            searchArea.innerHTML = resultsHtml || `<p class="verse-text" style="text-align:center; margin-top:50px;">검색 결과가 없습니다.</p>`;
+            document.getElementById('currentTitle').innerHTML = `역경 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(총 ${totalMatches}건)</span>`;
         }
 
-        function jumpToBible(bookName, lineIndex) {
-            loadScripture(bookName, lineIndex);
-        }
-
-        function jumpToYeokdo(title, lineIndex) {
-            loadYeokdo(title, lineIndex);
-        }
-
-        function loadScripture(bookName, targetLineIndex = -1) {
-            const prevActive = document.querySelector('.book-item.active');
-            const isSameBook = prevActive && prevActive.dataset.book === bookName;
-
-            if (isGlobalSearch && targetLineIndex === -1) {
-                toggleGlobalSearch();
-            }
-
-            if (isSameBook && targetLineIndex === -1) {
-                prevActive.classList.toggle('active');
+        function loadScripture(bookName, targetLineIndex = -1, secKey = null) {
+            // [Full Stream Integration] 역경(주역, 정역, 십익) 카테고리 체크
+            if (YEOKDO_BOOKS.includes(bookName)) {
+                loadYeokdoSection(bookName, secKey || "01", targetLineIndex);
                 return;
             }
 
+            const activeItem = document.querySelector(`.book-item[data-book="${bookName}"]`);
+            if (!activeItem) return;
+            
+            const wasActive = activeItem.classList.contains('active');
+            
+            // 모든 book-item에서 active 제거
+            document.querySelectorAll('.book-item').forEach(el => el.classList.remove('active'));
+            
+            if (targetLineIndex !== -1) {
+                // 검색 결과 클릭 시 즉시 본문 로드
+                activeItem.classList.add('active');
+                renderScriptureContent(bookName, targetLineIndex);
+            } else if (!wasActive) {
+                // 제목 클릭 시 토글만 수행
+                activeItem.classList.add('active');
+                const text = BIBLE_DATA[bookName];
+                const cleanedText = cleanMarkdown(text || "");
+                const tocContainer = document.getElementById(`toc-${bookName.replace(/\s+/g, '-')}`);
+                if (tocContainer && !tocContainer.hasChildNodes()) tocContainer.innerHTML = buildTOC(cleanedText, bookName);
+            }
+        }
+
+        function renderScriptureContent(bookName, targetLineIndex = -1) {
             const text = BIBLE_DATA[bookName];
             if (!text) return;
-
             const cleanedText = cleanMarkdown(text);
             renderContent(cleanedText, bookName, targetLineIndex);
-
-            document.querySelectorAll('.book-item').forEach(el => {
-                el.classList.remove('active');
-                if (el.dataset.book === bookName) {
-                    el.classList.add('active');
-                }
-            });
-
-            window.currentBookText = cleanedText;
             window.currentBookName = bookName;
             localStorage.setItem('hyunmu_last_read_book', bookName);
+            if (window.innerWidth <= 768) document.getElementById('sidebar').classList.remove('show');
+        }
 
-            const tocContainerId = `toc-${bookName.replace(/\s+/g, '-')}`;
-            const tocContainer = document.getElementById(tocContainerId);
-            if (tocContainer && !tocContainer.hasChildNodes()) {
-                tocContainer.innerHTML = buildTOC(cleanedText, bookName);
+        function loadScriptureSection(bookName, elementId) {
+            if (window.currentBookName !== bookName) {
+                renderScriptureContent(bookName);
             }
-
-            const activeEl = document.querySelector('.book-item.active');
-            if (activeEl && targetLineIndex === -1) {
-                activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-
-            if (window.innerWidth <= 768 && (!isSameBook || targetLineIndex !== -1)) {
-                document.getElementById('sidebar').classList.remove('show');
-            }
+            scrollToId(elementId);
         }
 
         function renderContent(text, title, targetLineIndex = -1) {
-            document.getElementById('currentTitle').innerHTML = `${title} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(로컬 데이터 모드)</span>`;
-
+            document.getElementById('currentTitle').innerHTML = `${title} <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(Bible)</span>`;
             document.getElementById('welcomeScreen').style.display = 'none';
             document.getElementById('searchResultsArea').style.display = 'none';
-            const readerContent = document.getElementById('readerContent');
-            readerContent.style.display = 'block';
-
-            // [가독성 패치] 동곡비서의 경우 <숫자> 태그 앞에서 줄바꿈을 강제하여 문단을 분리함
-            if (title === '동곡비서') {
-                text = text.replace(/<(\d+)>/g, '\n<$1>');
-            }
-
-            const lines = text.split('\n');
-            let htmlContent = '';
-
-            let chapterIndex = 0;
-            let verseIndex = 0;
-
+            const reader = document.getElementById('readerContent');
+            reader.style.display = 'block';
+            
+            // [정상화] 제목 포함 여부로 특수 경전 판별 (인식률 향상)
+            const isSpecial = (title.includes('동곡비서') || title.includes('보천교 교전'));
+            
+            // [동기화] 특수 구분자 전처리 (줄바꿈 강제 삽입으로 인식 분리)
+            let processedText = text;
+            if (isSpecial) processedText = text.replace(/<(\d+)>/g, '\n<$1>');
+            
+            const lines = processedText.split('\n');
+            let html = '', cIdx = 0, vIdx = 0;
+            
             for (let i = 0; i < lines.length; i++) {
-                let line = lines[i].trim();
+                const line = lines[i].trim();
                 if (!line) continue;
-
-                let lineId = `bible-line-${i}`;
-                let isTarget = (i === targetLineIndex);
-                let targetClass = isTarget ? ' target-highlight' : '';
-                let displayLine = line;
-
-                if (line.startsWith('### ')) {
-                    const cleanTitle = line.replace('###', '').trim();
-                    const id = `toc-3-${chapterIndex}-${verseIndex++}`;
-                    htmlContent += `<h3 id="${id}" class="verse-header${targetClass}" data-line="${lineId}">${cleanTitle}</h3>`;
+                
+                const lid = `bible-line-${i}`;
+                const tCls = (i === targetLineIndex) ? ' target-highlight' : '';
+                
+                // [수수함] <숫자> 패턴을 거창한 제목(h2)이 아닌 본문의 자연스러운 시작점으로 처리
+                if (isSpecial && /^<(\d+)>/.test(line)) {
+                    const m = line.match(/^<(\d+)>(.*)/);
+                    const num = m[1];
+                    const content = m[2].trim();
+                    // 과도한 테두리와 장식을 제거하고 수수한 텍스트 양식으로 변환
+                    html += `<p id="toc-dong-${num}" class="verse-text${tCls}" style="white-space: pre-wrap; scroll-margin-top:160px;" onclick="copyToClipboard('toc-dong-${num}')"><span style="color:#D4AF37; font-weight:bold; margin-right:10px;">[${num}]</span> ${content}</p>`;
+                } else if (line.startsWith('### ')) {
+                    html += `<h3 id="toc-3-${cIdx}-${vIdx++}" class="verse-header${tCls}">${line.replace('###', '').trim()}</h3>`;
                 } else if (line.startsWith('## ')) {
-                    const cleanTitle = line.replace('##', '').trim();
-                    verseIndex = 0;
-                    const id = `toc-2-${++chapterIndex}`;
-                    htmlContent += `<h2 id="${id}" class="chapter-header${targetClass}" data-line="${lineId}">${cleanTitle}</h2>`;
+                    vIdx = 0; 
+                    html += `<h2 id="toc-2-${++cIdx}" class="chapter-header${tCls}">${line.replace('##', '').trim()}</h2>`;
                 } else if (line.startsWith('# ')) {
+                    html += `<h1 class="yeokdo-h1${tCls}">${line.replace('#', '').trim()}</h1>`;
                 } else {
-                    // [동곡비서] 번호 분리 렌더링 (PC 버전 가독성 최적화)
-                    if (title === '동곡비서') {
-                        const match = line.match(/^<(\d+)>(.*)/);
-                        if (match) {
-                            displayLine = `<span class="line-number" style="color:#D4AF37; font-weight:bold; margin-right:12px;">${match[1]}.</span>${match[2].trim()}`;
-                        }
-                    }
-                    htmlContent += `<p id="${lineId}" class="verse-text${targetClass}">${displayLine} <span class="copy-icon" onclick="copyToClipboard('${lineId}')" title="출처와 함께 복사">📋</span></p>`;
+                    // [무결성] 일반 텍스트 누락 없이 paragraphs로 렌더링
+                    html += `<p id="${lid}" class="verse-text${tCls}" style="white-space: pre-wrap;" onclick="copyToClipboard('${lid}')">${line}</p>`;
                 }
             }
-
-            readerContent.innerHTML = htmlContent;
-
+            
+            // [최종 보루] 파싱 결과가 비어있을 경우 원본이라도 현시하여 백지화 방지
+            reader.innerHTML = html || `<div class="verse-text">${text}</div>`;
+            
             if (targetLineIndex !== -1) {
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        const targetEl = document.getElementById(`bible-line-${targetLineIndex}`) || document.querySelector(`[data-line="bible-line-${targetLineIndex}"]`);
-                        if (targetEl) {
-                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
-                    });
-                });
+                const targetEl = document.getElementById(`bible-line-${targetLineIndex}`);
+                if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
                 document.getElementById('contentArea').scrollTop = 0;
             }
         }
 
-        function loadYeokdo(title, targetLineIndex = -1) {
-            const prevActive = document.querySelector('.book-item.active');
-            const isSameBook = prevActive && prevActive.dataset.book === title;
-
-            if (isGlobalSearch) {
-                toggleGlobalSearch();
-            }
-
-            if (isSameBook && targetLineIndex === -1) {
-                prevActive.classList.toggle('active');
-                return;
-            }
-
-            const text = YEOKDO_DATA[title];
-            if (!text) return;
-
-            window.currentBookText = text;
-            window.currentBookName = title;
-            localStorage.setItem('hyunmu_last_read_book', title);
-            
-            isGlobalSearch = false;
-            document.getElementById('globalSearchBtn').classList.remove('active');
-
-            document.querySelectorAll('.book-item').forEach(el => el.classList.remove('active'));
-            const activeItem = document.querySelector(`.book-item[data-book="${title}"]`);
-            if (activeItem) activeItem.classList.add('active');
-
-            document.getElementById('currentTitle').innerText = title;
-            document.getElementById('welcomeScreen').style.display = 'none';
-            document.getElementById('searchResultsArea').style.display = 'none';
-            const readerContent = document.getElementById('readerContent');
-            readerContent.style.display = 'block';
-            
-            readerContent.innerHTML = formatMD(text, targetLineIndex);
-            
-            const tocEl = document.getElementById(`toc-yeokdo-${title.replace(/\s+/g, '-')}`);
-            if (tocEl) {
-                document.querySelectorAll('.toc-container').forEach(el => el.innerHTML = '');
-                tocEl.innerHTML = buildTOC(text, title);
-            }
-
-            if (targetLineIndex !== -1) {
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        const targetEl = document.getElementById(`yeokdo-line-${targetLineIndex}`) || document.querySelector(`[data-line="yeokdo-line-${targetLineIndex}"]`);
-                        if (targetEl) {
-                            targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        }
-                    });
-                });
-            } else {
-                document.getElementById('contentArea').scrollTop = 0;
-            }
-
-            if (window.innerWidth <= 768 && (!isSameBook || targetLineIndex !== -1)) document.getElementById('sidebar').classList.remove('show');
-        }
-
-        function formatMD(text, targetLineIndex = -1) {
+        function buildTOC(text, bookName) {
             const lines = text.split('\n');
-            let html = '';
-            let chapterIndex = 0;
-            let verseIndex = 0;
-
-            for (let i = 0; i < lines.length; i++) {
-                const trimmed = lines[i].trim();
-                let isTarget = (i === targetLineIndex);
-                let targetClass = isTarget ? ' target-highlight' : '';
-                let lineId = `yeokdo-line-${i}`;
-
-                if (trimmed.startsWith('### ')) {
-                    let title = trimmed.replace('###', '').trim();
-                    title = title.replace(/^[•·\s]+/, ''); // [정역 텍스트 정제]
-                    const id = `toc-3-${chapterIndex}-${verseIndex++}`;
-                    html += `<h3 id="${id}" class="verse-header${targetClass}" data-line="${lineId}">${title}</h3>\n`;
-                } else if (trimmed.startsWith('## ')) {
-                    let title = trimmed.replace('##', '').trim();
-                    title = title.replace(/^[•·\s]+/, ''); // [정역 텍스트 정제]
-                    verseIndex = 0;
-                    const id = `toc-2-${++chapterIndex}`;
-                    html += `<h2 id="${id}" class="chapter-header${targetClass}" data-line="${lineId}">${title}</h2>\n`;
-                } else if (trimmed.startsWith('# ')) {
-                    let title = trimmed.replace('#', '').trim();
-                    title = title.replace(/^[•·\s]+/, ''); // [정역 텍스트 정제]
-                    verseIndex = 0;
-                    const id = `toc-1-${++chapterIndex}`; // TOC와 싱크를 맞추기 위한 ID 부여
-                    html += `<h1 id="${id}" class="book-title${targetClass}" data-line="${lineId}">${title}</h1>\n`;
-                } else {
-                    if (trimmed) {
-                        html += `<p id="${lineId}" class="verse-text${targetClass}">${lines[i]} <span class="copy-icon" onclick="copyToClipboard('${lineId}')" title="출처와 함께 복사">📋</span></p>\n`;
-                    } else {
-                        html += `\n`;
-                    }
-                }
+            let tocHtml = '', cIdx = 0, vIdx = 0;
+            const isSpecial = (bookName.includes('동곡비서') || bookName.includes('보천교 교전'));
+            
+            // [절제] 특수 경전은 복잡한 구절 목차를 폐기하고 단일 항목으로 통일
+            if (isSpecial) {
+                tocHtml += `<div class="toc-item level-2" style="color:var(--gold); font-weight:800; border-left:2px solid var(--gold);" onclick="event.stopPropagation(); renderScriptureContent('${bookName}')">[ 전체 본문 보기 ]</div>`;
+                return tocHtml; // 하위 목차 생성을 중단하여 UI를 정갈하게 유지
             }
-            return html;
+
+            lines.forEach(line => {
+                const trimmed = line.trim();
+                if (trimmed.startsWith('### ')) {
+                    tocHtml += `<div class="toc-item level-3" onclick="event.stopPropagation(); loadScriptureSection('${bookName}', 'toc-3-${cIdx}-${vIdx++}')">${trimmed.replace('###','').trim()}</div>`;
+                } else if (trimmed.startsWith('## ')) {
+                    vIdx = 0; tocHtml += `<div class="toc-item level-2" onclick="event.stopPropagation(); loadScriptureSection('${bookName}', 'toc-2-${++cIdx}')">${trimmed.replace('##','').trim()}</div>`;
+                } 
+                // [동기화] 특수 경전 <숫자> 패턴 목차 추출
+                else if (isSpecial && /<(\d+)>/.test(trimmed)) {
+                    const m = trimmed.match(/<(\d+)>(.*)/);
+                    const num = m[1];
+                    let summary = m[2].trim();
+                    if (summary.length > 20) summary = summary.substring(0, 20) + '...';
+                    // 본문 ID(toc-dong-)와 정확히 일치시켜 스크롤 연결
+                    tocHtml += `<div class="toc-item level-2" onclick="event.stopPropagation(); loadScriptureSection('${bookName}', 'toc-dong-${num}')"><${num}> ${summary}</div>`;
+                }
+            });
+            return tocHtml;
+        }
+
+        function scrollToId(id) {
+            const el = document.getElementById(id);
+            if (el) document.getElementById('contentArea').scrollTo({ top: el.offsetTop - 110, behavior: 'smooth' });
+        }
+
+        function toggleGlobalSearch() {
+            isGlobalSearch = !isGlobalSearch;
+            const btn = document.getElementById('globalSearchBtn');
+            btn.classList.toggle('active', isGlobalSearch);
+            btn.textContent = isGlobalSearch ? '전체 검색 모드 해제' : '전체 경전 검색';
+            if (isGlobalSearch) document.getElementById('searchInput').focus();
+        }
+
+        function doBibleSearch(queryStr, isGlobal) {
+            const query = queryStr.toLowerCase().replace(/\s+/g, '');
+            const searchArea = document.getElementById('searchResultsArea');
+            if (!query) return;
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('readerContent').style.display = 'none';
+            searchArea.style.display = 'block';
+            let resultsHtml = '', totalMatches = 0;
+            const targetBooks = isGlobal ? BIBLE_LIST : (window.currentBookName ? [window.currentBookName] : BIBLE_LIST);
+            targetBooks.forEach(book => {
+                const lines = cleanMarkdown(BIBLE_DATA[book] || "").split('\n');
+                let matches = 0, bHtml = '';
+                lines.forEach((line, i) => {
+                    if (line.toLowerCase().replace(/\s+/g,'').includes(query) || getChoseong(line).includes(query)) {
+                        bHtml += `<div class="search-result-item" onclick="loadScripture('${book}', ${i})" style="cursor:pointer; margin-bottom:15px; padding:10px; border-radius:8px;">
+                            <h3 class="verse-header" style="margin-top:0;"><span style="color:#9aa0a6;">${book}</span></h3>
+                            <p class="verse-text match" style="border-left:3px solid var(--gold); margin-bottom:0;">${line.replace(/^#+\s+/,'')}</p>
+                        </div>`;
+                        matches++; totalMatches++;
+                    }
+                });
+                if (matches > 0) resultsHtml += `<div class="search-result-book">${book} (${matches}건)</div>` + bHtml;
+            });
+            searchArea.innerHTML = resultsHtml || `<p class="verse-text" style="text-align:center; margin-top:50px;">결과가 없습니다.</p>`;
+            document.getElementById('currentTitle').innerHTML = `성구 검색 <span style="font-size:12px; color:var(--text-secondary); margin-left:10px;">(총 ${totalMatches}건)</span>`;
         }
     </script>
 </body>
-
 </html>
