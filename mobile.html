@@ -277,7 +277,8 @@
             transform: scale(1.02);
             transition: all 0.4s ease-out;
         }
-        }
+        .line-row { scroll-margin-top: 80px; }
+        .line-empty { height: 1em; }
     </style>
 </head>
 <body>
@@ -582,30 +583,33 @@
 
             YEOKDO_LIST.forEach(title => {
                 const text = YEOKDO_DATA[title];
+                if (!text) return;
+
                 const lines = text.split('\n');
                 let matches = [];
-                let cIdx = 0, vIdx = 0;
+                let cIdx = 0, vIdx = 0, hIdx = 0;
+                const isHex = title.includes("64괘");
+                let lastId = null;
 
-                lines.forEach(line => {
+                for (let i = 0; i < lines.length; i++) {
+                    const line = lines[i];
                     const t = line.trim();
-                    if (t.startsWith('# ')) {
-                        cIdx++; vIdx = 0;
-                    } else if (t.startsWith('## ')) {
-                        cIdx++; vIdx = 0;
-                    } else if (t.startsWith('### ')) {
+                    
+                    // [ID 매칭 알고리즘 정렬] formatMD와 1:1 동기화 (내부 상태 추적용)
+                    if (t.startsWith('### ')) {
                         vIdx++;
+                    } else if (t.startsWith('## ')) {
+                        vIdx = 0; hIdx++; cIdx++;
+                    } else if (t.startsWith('# ')) {
+                        vIdx = 0; cIdx++;
                     }
 
                     const searchLine = t.toLowerCase().replace(/\s+/g, '');
                     if (searchLine.includes(q) || getChoseong(searchLine).includes(q)) {
-                        let id = null;
-                        if (t.startsWith('# ')) id = `toc-1-${cIdx}`;
-                        else if (t.startsWith('### ')) id = `toc-3-${cIdx}-${vIdx}`;
-                        else if (t.startsWith('## ')) id = `toc-2-${cIdx}`;
-                        
-                        matches.push({ text: t, id: id });
+                        // [초정밀 조준] 제목이 아닌 해당 구절의 정확한 '줄 번호(Index)'를 타격 ID로 각인
+                        matches.push({ text: t, id: `line-${i}` });
                     }
-                });
+                }
 
                 if (matches.length > 0) {
                     const group = document.createElement('div');
@@ -615,12 +619,24 @@
                     
                     matches.forEach(m => {
                         const item = document.createElement('div');
+                        item.className = 'search-result-item';
                         item.style.padding = '10px 8px';
                         item.style.fontSize = '14px';
                         item.style.color = '#444';
                         item.style.fontWeight = '600';
+                        item.style.cursor = 'pointer';
                         item.innerText = m.text.replace(/^#+\s+/, '');
-                        item.onclick = () => loadYeokdoMobile(title, m.id);
+                        
+                        // [검색 결과 클릭 이벤트 재설계]
+                        item.onclick = (e) => {
+                            e.stopPropagation();
+                            // 본문 레이어 강제 현시
+                            const readerLayer = document.getElementById('readerLayer');
+                            if (readerLayer) {
+                                readerLayer.style.display = 'flex';
+                            }
+                            loadYeokdoMobile(title, m.id);
+                        };
                         group.appendChild(item);
                     });
                     container.appendChild(group);
@@ -674,23 +690,30 @@
             let cIdx = 0, vIdx = 0, hIdx = 0;
             const isHex = title && title.includes("64괘");
 
-            for (let line of lines) {
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i];
                 const t = line.trim();
+                let inner = '';
+                const rowId = `line-${i}`;
+
                 if (t.startsWith('### ')) {
                     const id = `toc-3-${cIdx}-${vIdx++}`;
-                    html += `<h3 id="${id}">${t.replace('###', '').trim()}</h3>\n`;
+                    inner = `<h3 id="${id}">${t.replace('###', '').trim()}</h3>`;
                 } else if (t.startsWith('## ')) {
                     vIdx = 0;
                     hIdx++;
                     const id = isHex ? `hex-target-${hIdx}` : `toc-2-${++cIdx}`;
-                    html += `<h2 id="${id}">${t.replace('##', '').trim()}</h2>\n`;
+                    inner = `<h2 id="${id}">${t.replace('##', '').trim()}</h2>`;
                 } else if (t.startsWith('# ')) {
                     vIdx = 0;
                     const id = `toc-1-${++cIdx}`;
-                    html += `<h2 id="${id}">${t.replace('#', '').trim()}</h2>\n`;
+                    inner = `<h2 id="${id}">${t.replace('#', '').trim()}</h2>`;
                 } else {
-                    html += line + '\n';
+                    inner = line || '&nbsp;';
                 }
+                
+                // 모든 줄을 고유 ID를 가진 div로 감싸 정밀 조준 가능하게 함
+                html += `<div id="${rowId}" class="line-row">${inner}</div>\n`;
             }
             return html;
         }
